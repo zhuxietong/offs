@@ -41,41 +41,18 @@ export type FetchGetter =
 // };
 
 /**
- * Fetch请求设置的类型定义
- * @template T - 响应的类型
- */
-export type FetchSetting<
-  T = any,
-  B = any,
-  Ext extends { [k: string]: any } = { [k: string]: any },
-> = {
-  encoding?: 'json' | 'query';
-  extract?: string | string[] | ExtractValueFunction;
-  convert?: (resp: any) => T;
-  manual?: boolean;
-  onResponse?: (resp: T, body?: B) => void;
-  onSuccess?: (resp: T, body?: B) => void;
-  onFailed?: (resp: T, body: B) => void;
-  init?: FetchRequestInit;
-  request?: (body?: B) => Promise<T>;
-  body?: { [k: string]: any } | FetchGetter;
-  query?: { [k: string]: any } | FetchGetter;
-  useBodyAsQuery?: boolean;
-} & Ext;
-
-/**
  * 从输入字符串中提取Fetch信息
  * @param {string} input - 包含Fetch信息的输入字符串
- * @returns {{ setting: FetchSetting, url: string }} - 提取的Fetch设置和URL
+ * @returns {{ setting: OffsVueFetchOption, url: string }} - 提取的Fetch设置和URL
  */
-export function extractFetchInfo(input: string): { setting: FetchSetting; url: string } {
+export function extractFetchInfo(input: string): { setting: OffsVueFetchOption; url: string } {
   const match = input.match(/^\[(.*?)\](.*)/);
   if (!match) return { url: input.trim(), setting: {} };
 
   const [, bracketContent, url] = match;
   const parts = bracketContent.split(',').map((part) => part.trim());
   const init: RequestInit = {};
-  const setting: FetchSetting = {};
+  const setting: OffsVueFetchOption = {};
 
   parts.forEach((part) => {
     if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'].includes(part.toUpperCase())) {
@@ -113,10 +90,10 @@ const defaultInit: RequestInit = {
  * @template Resp - 响应的类型
  * @template Body - 请求体的类型
  * @param {string} url - Fetch请求的URL
- * @param {FetchSetting} [setting] - 可选的Fetch请求设置
+ * @param {OffsVueFetchOption} [setting] - 可选的Fetch请求设置
  * @returns {{ data: Ref<Resp>, loading: Ref<boolean>, run: (body?: Body) => Promise<any> }} - 数据、加载状态和运行函数
  */
-export const useFetch:UseFetchFunction = <Resp = any, Body = any>(url: string, setting?: FetchSetting) => {
+export const useFetch:UseFetchFunction = <Resp = any, Body = any>(url: string, setting?: OffsVueFetchOption) => {
   const data = ref<Resp>([] as Resp);
   const loading = ref(false);
   // const run = (body?: Body) => {
@@ -124,7 +101,7 @@ export const useFetch:UseFetchFunction = <Resp = any, Body = any>(url: string, s
   // }
   // return {data,loding,run}
 
-    /**
+  /**
    * 根据指定的编码对请求体进行编码
    * @param {Body} body - 请求体
    * @returns {any} - 编码后的请求体
@@ -152,7 +129,7 @@ export const useFetch:UseFetchFunction = <Resp = any, Body = any>(url: string, s
     loading.value = true;
     const { url: urlStringPath, setting: fSetting } = extractFetchInfo(url);
 
-    const newSetting = deepMerge(fSetting, setting || {}) as FetchSetting;
+    const newSetting = deepMerge(fSetting, setting || {}) as OffsVueFetchOption;
 
     const options = deepMerge({}, defaultInit, newSetting.init || {});
     delete options.extract;
@@ -169,7 +146,7 @@ export const useFetch:UseFetchFunction = <Resp = any, Body = any>(url: string, s
     }
     if (body) {
       if(newSetting.init?.method?.toUpperCase() === 'post')
-      options.body = encodeBody(body);
+        options.body = encodeBody(body);
     }
     if (setting?.useBodyAsQuery) {
       delete options.body;
@@ -214,7 +191,6 @@ export const useFetch:UseFetchFunction = <Resp = any, Body = any>(url: string, s
     }
 
     const { url: _url, init: _init } = FetchIntercept.before(urlString, options);
-    console.warn('-',_init)
     return fetch(_url, _init)
       .then(async (res) => {
         try {
@@ -234,7 +210,7 @@ export const useFetch:UseFetchFunction = <Resp = any, Body = any>(url: string, s
   };
 
   onMounted(() => {
-    if (!setting?.manual) run((setting?.init?.body as Body) || (setting?.body as Body)).then(()=>{
+    if (!setting?.manual) run((setting?.init?.body as Body) || (setting?.body as Body)).then(() => {
 
     }).catch( () => {});
   });

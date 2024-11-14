@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [
     vue(),
     dts({
-      insertTypesEntry: true,
+      include: ['src/**/*.ts', 'src/**/*.d.ts', 'src/vue-extensions.d.ts', 'src/**/*.vue'],
+      copyDtsFiles: true,
     }),
   ],
   build: {

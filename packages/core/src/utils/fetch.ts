@@ -10,8 +10,7 @@ async function fetchWithTimeout(
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const response = await fetch(url, { ...option, signal: controller.signal });
-    return response;
+    return await fetch(url, { ...option, signal: controller.signal });
   } catch (error) {
     // @ts-ignore
     if (error.name === 'AbortError') {
@@ -28,33 +27,14 @@ export const FetchIntercept = {
   before: (url: string, init: RequestInit) => {
     return { url, init };
   },
-  after: (_option: BaseFetchOption<any>, resp: any) => {
+  after: (_option: OffsCoreFetchOption<any>, resp: any) => {
     return new Promise((resolve) => {
       resolve(resp);
     });
   },
-  failed: (_option: BaseFetchOption<any>, err: any) => {
+  failed: (_option: OffsCoreFetchOption<any>, err: any) => {
     console.error(err);
   },
-};
-type ExtractFunc<T> = (_resp: any) => T;
-
-export type BaseFetchOption<T = any> = {
-  init?: RequestInit;
-  extract?: ExtractFunc<T> | string;
-  encoding?: 'json' | 'query';
-  query?: { [k: string]: any };
-  body?: { [k: string]: any };
-  timeout?: number;
-  before?: (typeof FetchIntercept)['before'];
-  after?: (typeof FetchIntercept)['after'];
-  failed?: (typeof FetchIntercept)['failed']
-  tips?:
-    | {
-        success?: string;
-        error?: string;
-      }
-    | string;
 };
 
 const defaultInit: Partial<RequestInit> = {
@@ -65,18 +45,22 @@ const defaultInit: Partial<RequestInit> = {
   },
 };
 
-function parserOption(str: string, option: BaseFetchOption) {
+function parserOption(str: string, option?: OffsCoreFetchOption) {
   const match = str.match(/^\[(.*?)\](.*)/);
-  if (!match) return { url: str.trim(), setting: {} };
+  if (!match) return { url: str.trim(), setting: {
+    init: {
+      ...defaultInit,
+      method:option?.method || (option?.body ? "post" : undefined) || defaultInit.method
+    }} };
 
   const [, bracketContent, url] = match;
   const parts = bracketContent.split(',').map((part) => part.trim());
-  const init: RequestInit = deepMerge({}, defaultInit, option.init || {});
-  const setting: BaseFetchOption = { ...option };
+  const init: RequestInit = deepMerge({}, defaultInit, option?.init || {});
+  const setting: OffsCoreFetchOption = { ...option };
 
   parts.forEach((part) => {
     if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'].includes(part.toUpperCase())) {
-      init.method = (part.toUpperCase() as RequestInit['method']) || defaultInit.method;
+      init.method = (part.toUpperCase() as RequestInit['method']) || option?.method || defaultInit.method;
     } else if (part.startsWith('@')) {
       if (!setting.extract) {
         setting.extract = part.slice(1);
@@ -91,12 +75,19 @@ function parserOption(str: string, option: BaseFetchOption) {
 /**
  * Fetch Json请求的包装
  * @param {string} url - 请求的URL, [get,@data,query]
- * @param opiton
+ * @param option
  */
-export function Fetch<T>(url: string, opiton: BaseFetchOption): Promise<T> {
-  const { url: _url, setting } = parserOption(url, opiton);
+export function Fetch<T>(url: string, option?: OffsCoreFetchOption): Promise<T> {
+
+
+  const ops = option || {}
+
+  const { url: _url, setting } = parserOption(url, ops);
   const headers = setting.init?.headers || {};
   const init = setting.init || {};
+  if(!init.method){{
+    init.method = option?.method || defaultInit.method;
+  }}
 
   /**
    * 根据指定的编码对请求体进行编码
@@ -106,7 +97,7 @@ export function Fetch<T>(url: string, opiton: BaseFetchOption): Promise<T> {
   const encodeBody = (body: Body): any => {
     const encoding =
       setting?.encoding ??
-      (/application\/json/.test((headers as Record<string, string>)['Content-Type'])
+      (/json/.test((headers as Record<string, string>)['Content-Type'])
         ? 'json'
         : undefined);
     if (typeof body === 'object') {
@@ -118,26 +109,30 @@ export function Fetch<T>(url: string, opiton: BaseFetchOption): Promise<T> {
   };
 
   let urlString = _url;
-  if (opiton.query) {
-    const query = new URLSearchParams(opiton.query as any).toString();
+  if (ops.query) {
+    const query = new URLSearchParams(ops.query as any).toString();
     urlString += (urlString.includes('?') ? '&' : '?') + query;
   }
-  if (opiton.body) {
-    init.body = encodeBody((opiton.body || {}) as any);
+  if (ops.body) {
+    init.body = encodeBody((ops.body || {}) as any);
+    if(!init.method){{
+      init.method = 'post';
+    }}
   }
   let lastOption = FetchIntercept.before(urlString, init);
-  if (opiton.before) {
-    lastOption = opiton.before(urlString, init);
+  if (ops.before) {
+    lastOption = ops.before(urlString, init);
   }
+
 
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     try {
-      console.log('lastOption', lastOption);
+      // console.log('lastOption', lastOption);
       const response = await fetchWithTimeout(
         lastOption.url,
         lastOption.init,
-        opiton.timeout || FetchIntercept.timeout,
+        ops.timeout || FetchIntercept.timeout,
       );
       if (!response.ok) {
         reject(`HTTP error! status: ${response.status}`);
@@ -145,10 +140,10 @@ export function Fetch<T>(url: string, opiton: BaseFetchOption): Promise<T> {
       }
       try {
         let raw = (await response.json()) as T;
-        if (opiton.after) {
-          await opiton.after(opiton, raw);
+        if (ops.after) {
+          await ops.after(ops, raw);
         } else {
-          raw = (await FetchIntercept.after(opiton, raw)) as any;
+          raw = (await FetchIntercept.after(ops, raw)) as any;
         }
         let data = raw;
         if (setting.extract) {
@@ -161,10 +156,10 @@ export function Fetch<T>(url: string, opiton: BaseFetchOption): Promise<T> {
         }
         resolve(data);
       } catch (e) {
-        if (opiton.failed) {
-          await opiton.failed(opiton, e);
+        if (ops.failed) {
+          await ops.failed(ops, e);
         } else {
-          FetchIntercept.failed(opiton, e)
+          FetchIntercept.failed(ops, e);
         }
         reject(e);
       }

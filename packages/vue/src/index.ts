@@ -1,8 +1,9 @@
 // src/index.ts
 // @ts-ignore
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./components.d.ts" />
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./global.d.ts" />
-
 
 export type * from './components.d.ts';
 export type * from './global.d.ts';
@@ -13,11 +14,20 @@ import { useFetch } from './hook/useFetch';
 import { App, Plugin } from 'vue';
 import usePaginationFetch from './hook/usePaginationFetch';
 import usePageFetch from './hook/usePageFetch';
+import { type OffsVueFetch, useOffsVueFetch } from './hook/vueFetch';
 
 import requestConfig from './config/request';
 import type { PaginationConfig } from './config/request';
 
-export { useFetch, useSize, usePaginationFetch, usePageFetch, requestConfig as config };
+export {
+  useFetch,
+  useSize,
+  usePaginationFetch,
+  usePageFetch,
+  useOffsVueFetch,
+  OffsVueFetch,
+  requestConfig as config,
+};
 
 type OffsVueInitOption = {
   pagination: (_url: string) => PaginationConfig;

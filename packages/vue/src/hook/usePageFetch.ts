@@ -1,5 +1,5 @@
-import { useFetch, type FetchSetting } from './useFetch';
-import { onMounted, ref, watch, computed } from 'vue';
+import { useFetch } from './useFetch';
+import { onMounted, ref, computed } from 'vue';
 import { getValue } from '@offs/core';
 import config from '../config/request';
 
@@ -30,7 +30,7 @@ const usePageFetch = <
   } = { [k: string]: any },
 >(
     url: string,
-    setting?: FetchSetting<Row, Body, PaginationParam>,
+    setting?: OffsVueFetchOption<Row, Body, PaginationParam>,
   ) => {
   const globalSetting = configBlock(extractURl(url));
 

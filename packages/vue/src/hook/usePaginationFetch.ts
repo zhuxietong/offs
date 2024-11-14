@@ -1,4 +1,4 @@
-import { useFetch, type FetchSetting } from './useFetch';
+import { useFetch, type OffsVueFetchOption } from './useFetch';
 import { onMounted, ref, watch } from 'vue';
 import { getValue } from '@offs/core';
 import config from '../config/request'
@@ -39,7 +39,7 @@ const usePaginationFetch = <
   } = { [k: string]: any },
 >(
     url: string,
-    setting?: FetchSetting<Row, Body, ExtSettingParam>,
+    setting?: OffsVueFetchOption<Row, Body, ExtSettingParam>,
   ) => {
   const globalSetting = configBlock(extractURl(url));
   const pageKey = setting?.pageKey || globalSetting.pageKey;

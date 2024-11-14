@@ -11,9 +11,6 @@ declare global {
     };
   };
 
-
-
-
   /**
    * 提取值的函数类型定义
    */
@@ -36,25 +33,29 @@ declare global {
     | 'query'
     | 'param';
 
-// const getterFunc = (getter: FetchGetter): object | undefined => {
-//   if (typeof getter === 'function') {
-//     return getter();
-//   } else if (typeof getter === 'object') {
-//     const type = getter.type || 'query';
-//     const route = useRoute();
-//     return type === 'param'
-//       ? extractValues(route.params, getter.extractRule)
-//       : extractValues(route.query, getter.extractRule);
-//   }
-//
-//   return undefined;
-// };
+  // const getterFunc = (getter: FetchGetter): object | undefined => {
+  //   if (typeof getter === 'function') {
+  //     return getter();
+  //   } else if (typeof getter === 'object') {
+  //     const type = getter.type || 'query';
+  //     const route = useRoute();
+  //     return type === 'param'
+  //       ? extractValues(route.params, getter.extractRule)
+  //       : extractValues(route.query, getter.extractRule);
+  //   }
+  //
+  //   return undefined;
+  // };
 
   /**
    * Fetch请求设置的类型定义
    * @template T - 响应的类型
    */
-  export type FetchSetting<
+  /**
+   * Fetch请求设置的类型定义
+   * @template T - 响应的类型
+   */
+  export type OffsVueFetchOption<
     T = any,
     B = any,
     Ext extends { [k: string]: any } = { [k: string]: any },
@@ -71,8 +72,13 @@ declare global {
     body?: { [k: string]: any } | FetchGetter;
     query?: { [k: string]: any } | FetchGetter;
     useBodyAsQuery?: boolean;
+    tips?:
+      | {
+      success?: string;
+      error?: string;
+    }
+      | string;
   } & Ext;
-
 
   // 定义 UseFetchReturn 类型，表示 useFetch 函数的返回值
   export type UseFetchReturn<Resp, Body> = {
@@ -81,13 +87,27 @@ declare global {
     run: (body?: Body) => Promise<Response>;
   };
 
-
   // 定义 useFetch 函数的类型
   export type UseFetchFunction = <Resp = any, Body = any>(
     url: string,
-    setting?: FetchSetting,
+    setting?: OffsVueFetchOption,
   ) => UseFetchReturn<Resp, Body>;
 
+  export type OffsVueFetchFunction<T extends string> = <T extends string>(
+    url: T,
+  ) => {
+    setting: OffsVueFetchOption;
+    url: T;
+    readonly get: any;
+    readonly post: any;
+    readonly delete: any;
+    readonly put: any;
+    readonly manual: any;
+    readonly create: any;
+    extract(extract: string | string[] | ExtractValueFunction): any;
+    option(op: OffsVueFetchOption): any;
+    use<R>(): UseFetchReturn<R, any>;
+  };
 }
 // 确保这个文件被 TypeScript 处理
 export {};

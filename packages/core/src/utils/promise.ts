@@ -1,17 +1,20 @@
 export class LazyPromise<T> implements Promise<T> {
+  id: any;
   private executor: (
     resolve: (value: T | PromiseLike<T>) => void,
-    reject: (reason?: any) => void,
+    reject: (reason?: any) => void
   ) => void;
   private promise: Promise<T> | null = null;
 
   constructor(
     executor: (
       resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason?: any) => void,
+      reject: (reason?: any) => void
     ) => void,
+    id?: any
   ) {
     this.executor = executor;
+    this.id = id;
   }
 
   private ensurePromise(): Promise<T> {
@@ -23,13 +26,13 @@ export class LazyPromise<T> implements Promise<T> {
 
   then<TResult1 = T, TResult2 = never>(
     onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
   ): Promise<TResult1 | TResult2> {
     return this.ensurePromise().then(onfulfilled, onrejected);
   }
 
   catch<TResult = never>(
-    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null,
+    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null
   ): Promise<T | TResult> {
     return this.ensurePromise().catch(onrejected);
   }
@@ -49,8 +52,8 @@ export class ExposedPromise<T> implements Promise<T> {
   constructor(
     executor?: (
       resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason?: any) => void,
-    ) => void,
+      reject: (reason?: any) => void
+    ) => void
   ) {
     this._promise = new Promise<T>((resolve, reject) => {
       // 暴露 resolve 和 reject 方法
@@ -70,13 +73,13 @@ export class ExposedPromise<T> implements Promise<T> {
 
   then<TResult1 = T, TResult2 = never>(
     onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
   ): Promise<TResult1 | TResult2> {
     return this._promise.then(onfulfilled, onrejected);
   }
 
   catch<TResult = never>(
-    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
+    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null
   ): Promise<T | TResult> {
     return this._promise.catch(onrejected);
   }
@@ -92,14 +95,14 @@ export class RetryPromise<T> extends ExposedPromise<T> {
   constructor(
     executor: (
       resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason?: any) => void,
+      reject: (reason?: any) => void
     ) => void,
-    options: { interval: number; repeat: number },
+    options: { interval: number; repeat: number }
   ) {
     // 包装原始的executor，添加重试逻辑
     const retryExecutor = async (
       resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason?: any) => void,
+      reject: (reason?: any) => void
     ) => {
       let lastError: any;
 
