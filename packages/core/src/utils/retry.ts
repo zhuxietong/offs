@@ -1,6 +1,7 @@
 // 使用函数重载来支持不同的装饰器调用方式
 export function Retry(interval: number, attempts: number) {
   // 方法装饰器
+  // @ts-ignore
   function methodDecorator(target: any, context: ClassMethodDecoratorContext) {
     return function (this: any, ...args: any[]) {
       return retryWrapper(this, target, interval, attempts, args);
@@ -8,6 +9,7 @@ export function Retry(interval: number, attempts: number) {
   }
 
   // 兼容旧版装饰器语法
+  // @ts-ignore
   function legacyMethodDecorator(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 

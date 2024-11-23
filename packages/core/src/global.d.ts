@@ -26,14 +26,18 @@ declare global {
   export type OffsCoreFetchOption<T = any> = {
     init?: RequestInit;
     method?: RequestInit['method'];
+    //than 抛出的提取字段方法/节点字符串
     extract?: ExtractFunc<T> | string;
     encoding?: 'json' | 'query';
     query?: { [k: string]: any };
     body?: { [k: string]: any };
+    log?: boolean;
     timeout?: number;
+    onGetRootJson?: (json: any) => any;
     before?: (typeof FetchIntercept)['before'];
     after?: (typeof FetchIntercept)['after'];
     failed?: (typeof FetchIntercept)['failed'];
+    request?: (body?: any) => Promise<T>;
     tips?:
       | {
           success?: string;

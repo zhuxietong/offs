@@ -7,7 +7,7 @@ const packages = [
   { name: '@offs/core', path: 'packages/core' },
   { name: '@offs/vue', path: 'packages/vue' },
   { name: '@offs/arco', path: 'packages/arco' },
-
+  { name: '@offs/uni', path: 'packages/uni' },
 ];
 
 async function selectPackages() {
@@ -29,4 +29,5 @@ async function selectPackages() {
   fs.writeFileSync('selected-packages.txt', selectedPackages.join('\n'));
 }
 
-selectPackages();
+// @ts-ignore
+await selectPackages();

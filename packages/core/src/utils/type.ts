@@ -7,7 +7,7 @@ export enum Type {
   undefined = 'undefined', // 未定义类型
   null = 'null', // 空类型
   func = 'func', // 函数类型
-  reg = 'reg' // 正则表达式类型
+  reg = 'reg', // 正则表达式类型
 }
 
 /**
@@ -32,16 +32,16 @@ export function type(instance: any) {
   if (Array.isArray(instance)) return Type.list;
 
   switch (typeof instance) {
-  case 'string':
-    return Type.string;
-  case 'number':
-    return Type.number;
-  case 'boolean':
-    return Type.bool;
-  case 'object':
-    return Type.dict;
-  default:
-    return Type.dict;
+    case 'string':
+      return Type.string;
+    case 'number':
+      return Type.number;
+    case 'boolean':
+      return Type.bool;
+    case 'object':
+      return Type.dict;
+    default:
+      return Type.dict;
   }
 }
 
@@ -53,7 +53,7 @@ type NodePath = any[] | string;
  * @param node - 路径，可以是数组或字符串
  * @returns {any} 指定路径的值
  */
-export const getValue = (obj: any, node: NodePath) => {
+export const getValue = (obj: any, node?: NodePath | undefined) => {
   if (!node) return obj;
 
   const nodes = typeof node === 'string' ? node.split('.') : node;

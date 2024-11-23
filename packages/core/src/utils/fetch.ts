@@ -1,14 +1,33 @@
 import { deepMerge } from './deepMerge';
 import { getValue } from './type';
+import OffsRequestConfig from "./requestConfig";
+import {offsRequestConfig} from "../index";
 
+/**
+ * 运行方法代替真实请求的模拟
+ */
+async function simulateFetchWrap(jsonFunc: () => Promise<any>) {
+  return {
+    json: jsonFunc,
+    ok: true,
+  } as Response;
+}
+
+/**
+ * 超时请求的包裹，超时后会抛出异常
+ * simulateFunc 为模拟请求的方法，传入该方法时会调用模拟方法
+ */
 async function fetchWithTimeout(
   url: string,
   option: RequestInit,
   timeout: number,
+  simulateFunc?: (...args: any) => Promise<any>,
 ): Promise<Response> {
+  if (simulateFunc) {
+    return await simulateFetchWrap(simulateFunc);
+  }
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
+  const timeoutId = setTimeout(() => controller.abort(), timeout || 30000);
   try {
     return await fetch(url, { ...option, signal: controller.signal });
   } catch (error) {
@@ -22,36 +41,29 @@ async function fetchWithTimeout(
   }
 }
 
-export const FetchIntercept = {
-  timeout: 20000,
-  before: (url: string, init: RequestInit) => {
-    return { url, init };
-  },
-  after: (_option: OffsCoreFetchOption<any>, resp: any) => {
-    return new Promise((resolve) => {
-      resolve(resp);
-    });
-  },
-  failed: (_option: OffsCoreFetchOption<any>, err: any) => {
-    console.error(err);
-  },
-};
 
-const defaultInit: Partial<RequestInit> = {
-  method: 'get',
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
-};
 
-function parserOption(str: string, option?: OffsCoreFetchOption) {
+
+
+
+export function parserFetchOption(str: string, option?: OffsCoreFetchOption) {
+
+  const defaultInit = offsRequestConfig.defaultInit;
+
   const match = str.match(/^\[(.*?)\](.*)/);
-  if (!match) return { url: str.trim(), setting: {
-    init: {
-      ...defaultInit,
-      method:option?.method || (option?.body ? "post" : undefined) || defaultInit.method
-    }} };
+  if (!match)
+    return {
+      url: str.trim(),
+      setting: {
+        init: {
+          ...defaultInit,
+          method:
+            option?.method ||
+            (option?.body ? 'post' : undefined) ||
+            defaultInit.method,
+        },
+      } as OffsCoreFetchOption<any>,
+    };
 
   const [, bracketContent, url] = match;
   const parts = bracketContent.split(',').map((part) => part.trim());
@@ -60,7 +72,10 @@ function parserOption(str: string, option?: OffsCoreFetchOption) {
 
   parts.forEach((part) => {
     if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'].includes(part.toUpperCase())) {
-      init.method = (part.toUpperCase() as RequestInit['method']) || option?.method || defaultInit.method;
+      init.method =
+        (part.toUpperCase() as RequestInit['method']) ||
+        option?.method ||
+        defaultInit.method;
     } else if (part.startsWith('@')) {
       if (!setting.extract) {
         setting.extract = part.slice(1);
@@ -78,16 +93,18 @@ function parserOption(str: string, option?: OffsCoreFetchOption) {
  * @param option
  */
 export function Fetch<T>(url: string, option?: OffsCoreFetchOption): Promise<T> {
+  const ops = option || {};
+  const FetchIntercept = OffsRequestConfig.intercept;
 
 
-  const ops = option || {}
-
-  const { url: _url, setting } = parserOption(url, ops);
+  const { url: _url, setting } = parserFetchOption(url, ops);
   const headers = setting.init?.headers || {};
   const init = setting.init || {};
-  if(!init.method){{
-    init.method = option?.method || defaultInit.method;
-  }}
+  if (!init.method) {
+    {
+      init.method = option?.method || offsRequestConfig.defaultInit.method;
+    }
+  }
 
   /**
    * 根据指定的编码对请求体进行编码
@@ -97,9 +114,7 @@ export function Fetch<T>(url: string, option?: OffsCoreFetchOption): Promise<T> 
   const encodeBody = (body: Body): any => {
     const encoding =
       setting?.encoding ??
-      (/json/.test((headers as Record<string, string>)['Content-Type'])
-        ? 'json'
-        : undefined);
+      (/json/.test((headers as Record<string, string>)['Content-Type']) ? 'json' : undefined);
     if (typeof body === 'object') {
       return encoding === 'json'
         ? JSON.stringify(body)
@@ -115,15 +130,16 @@ export function Fetch<T>(url: string, option?: OffsCoreFetchOption): Promise<T> 
   }
   if (ops.body) {
     init.body = encodeBody((ops.body || {}) as any);
-    if(!init.method){{
-      init.method = 'post';
-    }}
+    if (!init.method) {
+      {
+        init.method = 'post';
+      }
+    }
   }
   let lastOption = FetchIntercept.before(urlString, init);
   if (ops.before) {
     lastOption = ops.before(urlString, init);
   }
-
 
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
@@ -132,7 +148,7 @@ export function Fetch<T>(url: string, option?: OffsCoreFetchOption): Promise<T> 
       const response = await fetchWithTimeout(
         lastOption.url,
         lastOption.init,
-        ops.timeout || FetchIntercept.timeout,
+        ops.timeout || offsRequestConfig.timeout,
       );
       if (!response.ok) {
         reject(`HTTP error! status: ${response.status}`);
@@ -140,6 +156,10 @@ export function Fetch<T>(url: string, option?: OffsCoreFetchOption): Promise<T> 
       }
       try {
         let raw = (await response.json()) as T;
+        if (option?.log) {
+          console.log('OffsCoreFetch response json', raw, lastOption);
+        }
+        ops.onGetRootJson?.(raw);
         if (ops.after) {
           await ops.after(ops, raw);
         } else {
@@ -156,6 +176,9 @@ export function Fetch<T>(url: string, option?: OffsCoreFetchOption): Promise<T> 
         }
         resolve(data);
       } catch (e) {
+        if (option?.log) {
+          console.log('OffsCoreFetch catch error', e, lastOption);
+        }
         if (ops.failed) {
           await ops.failed(ops, e);
         } else {

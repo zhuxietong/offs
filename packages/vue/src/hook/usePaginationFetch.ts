@@ -1,4 +1,4 @@
-import { useFetch, type OffsVueFetchOption } from './useFetch';
+import { useFetch } from './useFetch';
 import { onMounted, ref, watch } from 'vue';
 import { getValue } from '@offs/core';
 import config from '../config/request'

@@ -67,7 +67,7 @@ export class OffsVueFetch<T extends string> {
 
 
   use<R>():UseFetchReturn<R, any> {
-    return useFetch(this.url, this.setting);
+    return useFetch(this.url, this.setting) as any
   }
 }
 

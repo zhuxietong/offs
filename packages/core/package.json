@@ -1,9 +1,9 @@
 {
   "name": "@offs/core",
-  "version": "0.0.10",
+  "version": "0.0.20",
   "main": "src/index.ts",
   "module": "src/index.ts",
-  "types": "dist/index.d.ts",
+  "types": "src/index.ts",
   "publishConfig": {
     "access": "public"
   },

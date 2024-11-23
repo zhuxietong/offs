@@ -19,8 +19,6 @@ async function selectValues() {
     },
   ]);
 
-
-
   fs.writeFileSync('selected-mode.txt', selectMode.join('\n'));
 }
 

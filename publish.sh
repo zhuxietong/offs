@@ -51,6 +51,7 @@ do
 
   # Publish package
   echo "Publishing $package_name..."
+  npm run build
   npm publish
   if [ $? -eq 0 ]; then
     echo "Successfully published $package_name@$new_version"

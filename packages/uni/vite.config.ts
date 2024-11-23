@@ -16,12 +16,12 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'OffsVue',
-      fileName: (format) => `offs-vue.${format}.js`,
+      name: 'OffsUni',
+      fileName: (format) => `offs-uni.${format}.js`,
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['vue', 'vue-router', '@offs/core', 'dayjs'],
+      external: ['vue', 'vue-router', '@offs/core','@dcloudio/uni-app', 'dayjs'],
       output: {
         globals: {
           vue: 'Vue',

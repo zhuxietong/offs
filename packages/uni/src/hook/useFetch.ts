@@ -1,4 +1,4 @@
-import { Fetch } from '@offs/core';
+import { Fetch } from '../utils/request';
 
 // @ts-ignore
 import { onMounted, ref } from 'vue';

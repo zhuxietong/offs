@@ -30,18 +30,18 @@ const usePageFetch = <
   } = { [k: string]: any },
 >(
     url: string,
-    setting?: OffsVueFetchOption<Row, Body, PaginationParam>,
+    option?: OffsPagingFetchOption<Row, Body>,
   ) => {
   const globalSetting = configBlock(extractURl(url));
 
-  const pageKey = setting?.pageKey || globalSetting.pageKey;
-  const pageSizeKey = setting?.pageKey || globalSetting.sizeKey;
-  const totalKey = setting?.totalKey || globalSetting.totalKey;
-  const listKey = setting?.listKey || extractListNodeString(url) || globalSetting.listKey;
+  const pageKey = option?.pageKey || globalSetting.pageKey;
+  const pageSizeKey = option?.pageKey || globalSetting.sizeKey;
+  const totalKey = option?.totalKey || globalSetting.totalKey;
+  const listKey = option?.listKey || extractListNodeString(url) || globalSetting.listKey;
 
-  const size = ref(setting?.defaultSize || globalSetting.defaultSize);
+  const size = ref(option?.defaultSize || globalSetting.defaultSize);
 
-  const pageBegin = setting?.beginPage || globalSetting.beginPage || 1;
+  const pageBegin = option?.beginPage || globalSetting.beginPage || 1;
   const page = ref<number | string>(pageBegin);
 
   const filter = ref<{ [k: string]: any } | undefined>(undefined);
@@ -50,12 +50,13 @@ const usePageFetch = <
 
   const tableData = ref<Row[]>([]);
 
+
   const {
     data,
     run: fetchRun,
     loading,
   } = useFetch<Row[], Body & PaginationParam>(url, {
-    ...setting,
+    ...option,
     extract: listKey,
     manual: true,
     onResponse: (resp, body) => {
@@ -64,23 +65,23 @@ const usePageFetch = <
       } catch (e) {
         /* empty */
       }
-      setting?.onResponse?.(resp, body);
+      option?.onResponse?.(resp, body);
     },
     convert: (resp) => {
-      if (setting?.convert) {
-        return setting.convert(resp);
+      if (option?.convert) {
+        return option.convert(resp);
       }
       return resp;
     },
     onSuccess: (resp, body) => {
       if (body?.[`${pageKey}`] + '' === `${pageBegin}`) {
-        if(Array.isArray(resp)){
+        if (Array.isArray(resp)) {
           tableData.value = [...resp];
         }
       } else {
         tableData.value = [...(tableData.value || []), ...resp];
       }
-      setting?.onSuccess && setting!.onSuccess(resp, body);
+      option?.onSuccess && option!.onSuccess(resp, body);
     },
   });
 
@@ -116,9 +117,8 @@ const usePageFetch = <
       .catch(() => {});
   };
 
-
   onMounted(() => {
-    if (!setting?.manual) {
+    if (!option?.manual) {
       run(filter.value as any)
         .then(() => {})
         .catch(() => {});

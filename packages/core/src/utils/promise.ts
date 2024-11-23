@@ -72,14 +72,23 @@ export class ExposedPromise<T> implements Promise<T> {
   }
 
   then<TResult1 = T, TResult2 = never>(
-    onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+    onfulfilled?:
+      | ((value: T) => TResult1 | PromiseLike<TResult1>)
+      | undefined
+      | null,
+    onrejected?:
+      | ((reason: any) => TResult2 | PromiseLike<TResult2>)
+      | undefined
+      | null
   ): Promise<TResult1 | TResult2> {
     return this._promise.then(onfulfilled, onrejected);
   }
 
   catch<TResult = never>(
-    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null
+    onrejected?:
+      | ((reason: any) => TResult | PromiseLike<TResult>)
+      | undefined
+      | null
   ): Promise<T | TResult> {
     return this._promise.catch(onrejected);
   }
@@ -92,6 +101,8 @@ export class ExposedPromise<T> implements Promise<T> {
 }
 
 export class RetryPromise<T> extends ExposedPromise<T> {
+  private isResolved: boolean = false;
+
   constructor(
     executor: (
       resolve: (value: T | PromiseLike<T>) => void,
@@ -99,37 +110,52 @@ export class RetryPromise<T> extends ExposedPromise<T> {
     ) => void,
     options: { interval: number; repeat: number }
   ) {
-    // 包装原始的executor，添加重试逻辑
-    const retryExecutor = async (
-      resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason?: any) => void
-    ) => {
+    // 首先调用 super() 并传入一个空的executor
+    // @ts-ignore
+    super((resolve, reject) => {});
+
+    // 现在可以安全地使用 this
+    const retryWithInterval = async () => {
       let lastError: any;
 
-      // 尝试执行repeat次
       for (let attempt = 0; attempt < options.repeat; attempt++) {
+        if (this.isResolved) {
+          return;
+        }
+
         try {
-          // 创建一个新的Promise来包装executor
           await new Promise<T>((innerResolve, innerReject) => {
             executor(innerResolve, innerReject);
-          }).then(resolve);
-
-          // 如果执行成功，直接返回
+          }).then((value) => {
+            this.isResolved = true;
+            this.resolve(value);
+          });
           return;
         } catch (error) {
           lastError = error;
 
-          // 如果不是最后一次尝试，则等待interval毫秒
-          if (attempt < options.repeat - 1) {
-            await new Promise((r) => setTimeout(r, options.interval));
+          if (this.isResolved || attempt >= options.repeat - 1) {
+            break;
           }
+
+          await new Promise((r) => setTimeout(r, options.interval));
         }
       }
 
-      // 如果所有尝试都失败了，则reject最后一个错误
-      reject(lastError);
+      if (!this.isResolved) {
+        this.reject(lastError);
+      }
     };
 
-    super(retryExecutor);
+    // 重写原始的resolve方法
+    const originalResolve = this.resolve;
+    this.resolve = (value: T | PromiseLike<T>) => {
+      this.isResolved = true;
+      originalResolve(value);
+    };
+
+    // 启动重试逻辑
+    retryWithInterval();
   }
 }
+

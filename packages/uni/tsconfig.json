@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "esnext",
+    "module": "esnext",
+    "esModuleInterop": true,
+    "strict": true,
+    "declaration": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "declarationDir": "./dist/types",
+    "outDir": "./dist",
+    "emitDeclarationOnly": false,
+    "baseUrl": ".",
+    "noImplicitAny": false,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+    },
+    "types": ["vue"]  // 如果使用 Vite
+  },
+  "include": [
+    "src/**/*",
+    "../../node_modules/@dcloudio/types/uni-app/uni/legacy/uni.d.ts",
+    "../../node_modules/@dcloudio/types/uni-app/uni/base/request.d.ts"
+  ]
+}
