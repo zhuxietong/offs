@@ -1,89 +1,101 @@
-#!/usr/bin/env bun
-import { readdirSync, writeFileSync } from 'fs'
-import { join, relative } from 'path'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import * as fs from 'fs';
+import * as path from 'path';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+// 定义组件目录路径
+const COMPONENTS_DIR = path.resolve(__dirname, './src/components');
 
-interface ComponentInfo {
-  name: string
-  path: string
-  importName: string
-  componentName: string
+// 根据路径生成 PascalCase 名称，并处理重复路径名的情况
+function toComponentName(filePath: string): string {
+  const parts = filePath.replace('.vue', '').split('/');
+  const fileName = parts.pop(); // 获取文件名
+  const parentDir = parts.pop(); // 获取上级目录名
+
+  // 如果父目录名和文件名相同，则只使用文件名
+  const baseName = parentDir === fileName ? fileName : `${parentDir || ''}-${fileName}`;
+
+  // 转换为 PascalCase 并添加 "Me" 前缀
+  return 'Me' + baseName.replace(/(^|[-_])(\w)/g, (_, __, char) => char.toUpperCase());
 }
 
-function scanVueFiles(dir: string, components: ComponentInfo[] = [], baseDir: string = dir) {
-  const files = readdirSync(dir, { withFileTypes: true })
+// 扫描组件目录
+function scanComponents(dir: string): { name: string; path: string }[] {
+  const components: { name: string; path: string }[] = [];
+  const files = fs.readdirSync(dir);
 
-  for (const file of files) {
-    const fullPath = join(dir, file.name)
-    if (file.isDirectory()) {
-      scanVueFiles(fullPath, components, baseDir)
-    } else if (file.name.endsWith('.vue')) {
-      const relativePath = './' + relative(baseDir, fullPath).replace(/\\/g, '/')
-      const baseName = file.name.replace('.vue', '')
-      const kebabName = baseName.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
-      const pascalName = baseName
-        .split('-')
-        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-        .join('')
+  files.forEach((file) => {
+    const fullPath = path.join(dir, file);
+    const stat = fs.statSync(fullPath);
 
-      components.push({
-        name: baseName,
-        path: relativePath,
-        importName: pascalName,
-        componentName: `me-${kebabName}`
-      })
+    if (stat.isDirectory()) {
+      // 如果是目录，则递归扫描
+      components.push(...scanComponents(fullPath));
+    } else if (stat.isFile() && file.endsWith('.vue')) {
+      // 如果是 Vue 文件，则记录组件名和路径
+      const relativePath = path.relative(COMPONENTS_DIR, fullPath).replace(/\\/g, '/');
+      const name = toComponentName(relativePath);
+      components.push({ name, path: `./components/${relativePath}` });
     }
-  }
-  return components
+  });
+
+  return components;
 }
 
-function generateInstallFile(components: ComponentInfo[]) {
-  const imports = components
-    .map(comp => `import ${comp.importName} from "${comp.path}"`)
-    .join('\n')
+// 生成 components.d.ts 文件
+function generateComponentsDTS(components: { name: string; path: string }[]) {
+  const lines = [
+    'export {}',
+    "declare module '@vue/runtime-core' {",
+    '  export interface GlobalComponents {',
+  ];
 
-  const registrations = components
-    .map(comp => `  app.component('${comp.componentName}', ${comp.importName})`)
-    .join('\n')
+  components.forEach(({ name, path }) => {
+    const importPath = path.replace(/\.vue$/, '');
+    lines.push(`    ${name}: typeof import('${importPath}.vue')['default']`);
+  });
 
-  return `${imports}
+  lines.push('  }');
+  lines.push('}');
 
-export function install_comps(app: any) {
-${registrations}
-}
-`
-}
-
-function generateTypesFile(components: ComponentInfo[]) {
-  const componentTypes = components
-    .map(comp => {
-      const globalName = 'Me' + comp.importName
-      return `    ${globalName}: typeof import('${comp.path}')['default']`
-    })
-    .join('\n')
-
-  return `export {}
-declare module '@vue/runtime-core' {
-  export interface GlobalComponents {
-${componentTypes}
-  }
-}
-`
+  const outputPath = path.resolve(COMPONENTS_DIR, '../components.d.ts');
+  fs.writeFileSync(outputPath, lines.join('\n'), 'utf-8');
+  console.log(`Generated: ${outputPath}`);
 }
 
-// 执行扫描
-const srcPath = join(__dirname, 'src')
-const components = scanVueFiles(srcPath)
+// 生成 install.ts 文件
+function generateInstallTS(components: { name: string; path: string }[]) {
+  const lines = [
+    "import { App } from 'vue';",
+    '',
+    '// 自动生成的全局组件注册文件',
+  ];
 
-// 生成并写入文件
-const installContent = generateInstallFile(components)
-const typesContent = generateTypesFile(components)
+  // 导入组件
+  components.forEach(({ name, path }) => {
+    lines.push(`import ${name} from '${path}';`);
+  });
 
-writeFileSync(join(srcPath, 'install.ts'), installContent)
-writeFileSync(join(srcPath, 'components.d.ts'), typesContent)
+  lines.push('');
+  lines.push('export default {');
+  lines.push('  install(app: App) {');
 
-console.log('Files generated successfully!')
+  // 注册组件
+  components.forEach(({ name }) => {
+    lines.push(`    app.component('${name}', ${name});`);
+  });
+
+  lines.push('  },');
+  lines.push('};');
+
+  const outputPath = path.resolve(COMPONENTS_DIR, '../install.ts');
+  fs.writeFileSync(outputPath, lines.join('\n'), 'utf-8');
+  console.log(`Generated: ${outputPath}`);
+}
+
+// 主函数
+function main() {
+  const components = scanComponents(COMPONENTS_DIR);
+  generateComponentsDTS(components);
+  generateInstallTS(components);
+}
+
+main();

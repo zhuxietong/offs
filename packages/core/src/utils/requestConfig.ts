@@ -1,21 +1,20 @@
-
 /**
  * 分页参数配置
  */
 export type PaginationConfig = {
   /** 分页大小key */
-  sizeKey: string;
+  sizeKey: string
   /** 页码key */
-  pageKey: string;
+  pageKey: string
   /** 默认分页大小 */
-  defaultSize: number;
+  defaultSize: number
   /** 总条数key */
-  totalKey: string;
+  totalKey: string
   /** 数据列表key,可以以逗号分隔多个 */
-  listKey: string;
+  listKey: string
   /** 开始页码 */
-  beginPage: number;
-};
+  beginPage: number
+}
 
 export const paginationConfig: PaginationConfig = {
   pageKey: 'page',
@@ -24,14 +23,15 @@ export const paginationConfig: PaginationConfig = {
   totalKey: 'total',
   listKey: 'data,list',
   beginPage: 1,
-};
+}
 
 export const dynamicPaginationConfig = (_url: string): PaginationConfig => {
-  return paginationConfig;
-};
+  return paginationConfig
+}
 
-const OffsRequestConfig = {
+let OffsRequestConfig = {
   pagination: dynamicPaginationConfig,
+  tag:'offs',
   timeout: 20000,
   defaultInit: {
     method: 'get',
@@ -40,19 +40,19 @@ const OffsRequestConfig = {
       'Content-Type': 'application/json; charset=UTF-8',
     },
   },
-  intercept:{
-    before: (url: string, init: RequestInit) => {
-      return { url, init };
+  intercept: {
+    before: (url: string, init: { [k: string]: any }) => {
+      return { url, init }
     },
-    after: (_option: OffsCoreFetchOption<any>, resp: any) => {
+    after: (_option: OffsCoreFetchOption<any> | object, resp: any) => {
       return new Promise((resolve) => {
-        resolve(resp);
-      });
+        resolve(resp)
+      })
     },
-    failed: (_option: OffsCoreFetchOption<any>, err: any) => {
-      console.error(err);
+    failed: (_option: OffsCoreFetchOption<any> | object, err: any) => {
+      console.error(err)
     },
-  }
-};
+  },
+}
 
-export default OffsRequestConfig;
+export default OffsRequestConfig

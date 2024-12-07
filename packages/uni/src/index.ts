@@ -4,33 +4,51 @@
 /// <reference path="./components.d.ts" />
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./global.d.ts" />
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="/vue-extensions.d.ts" />
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="/props.d.ts" />
 
-import { install_comps } from './install';
+import installCmp from './install'
+import { Dayjs } from '@offs/core'
 
-export type * from './components.d.ts';
-export type * from './global.d.ts';
-export { Fetch } from './utils/request';
-export { useFetch } from './hook/useFetch';
+export type * from './components.d.ts'
+export type * from './global.d.ts'
+export type * from './vue-extensions.d.ts'
+export type * from './props.ts'
+
+export { Fetch } from './utils/request'
+export { useFetch } from './hook/useFetch'
+export { DeepAssign } from './utils/merge'
+export { useNavigation } from './hook/useNavigation'
+export { OffsNode } from './utils/node'
+
 // @ts-ignore
-import { App, Plugin } from 'vue';
+import { App, Plugin } from 'vue'
 
-const OffsUniPlugin: Plugin<any> = {
+import { uniInitGlobal } from './install_global'
+
+export const offsModule: Plugin<any> = {
   install: (app: any, _options: any) => {
-    install_comps(app);
+    uniInitGlobal()
+    // @ts-ignore
+    installCmp.install(app)
     // Object.assign(requestConfig, options);
     app.config.globalProperties.$time = (_t: string, _type?: 'cn' | 'en') => {
-      // return Dayjs.prettyTime(t, type || 'cn');
-    };
+      return Dayjs.prettyTime(_t, _type || 'cn')
+    }
     app.config.globalProperties.$day = (_t: string, _type?: 'cn' | 'en') => {
-      // return Dayjs.prettyDay(t, type || 'en');
-    };
+      return Dayjs.prettyDay(_t, _type || 'en')
+    }
     app.config.globalProperties.$tf = (_t: string, _f?: string) => {
-      // return Dayjs.format(t, f || 'YYYY-MM-DD HH:mm:ss');
-    };
+      return Dayjs.format(_t, _f || 'YYYY-MM-DD HH:mm:ss')
+    }
     app.config.globalProperties.$int = (v: any) => {
-      return parseInt(`${v}`);
-    };
+      return parseInt(`${v}`)
+    }
+    app.config.globalProperties.$upx = (v: any) => {
+      return uni.upx2px(v)
+    }
   },
-};
-
-export default OffsUniPlugin;
+}
+export default offsModule

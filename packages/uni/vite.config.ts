@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
 import vue from '@vitejs/plugin-vue';
+import path from 'path';
 
 export default defineConfig({
   plugins: [
@@ -10,9 +11,20 @@ export default defineConfig({
     dts({
       include: ['src/**/*.ts', 'src/**/*.d.ts', 'src/vue-extensions.d.ts', 'src/**/*.vue'],
       outDir: 'dist/types',
-      copyDtsFiles: true,
+      copyDtsFiles: true
     }),
   ],
+  resolve: {
+    alias: {
+      '#': path.resolve(__dirname, 'src'), // 指定库的路径
+    },
+  },
+  preprocessorOptions: {
+    scss: {
+      additionalData: `@use "./src/components/form/form.scss" as *;
+      @use "./src/style.scss" as *;`
+    }
+  },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -21,7 +33,7 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['vue', 'vue-router', '@offs/core','@dcloudio/uni-app', 'dayjs'],
+      external: ['vue', 'vue-router', '@offs/core', '@dcloudio/uni-app', 'dayjs'],
       output: {
         globals: {
           vue: 'Vue',

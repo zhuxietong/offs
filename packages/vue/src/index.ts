@@ -5,19 +5,20 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./global.d.ts" />
 
-export type * from './components.d.ts';
-export type * from './global.d.ts';
-import { Dayjs } from '@offs/core';
-import { useSize } from './hook/useSize';
-import { useFetch } from './hook/useFetch';
+// export type * from './components.d.ts';
+// export type * from './global.d.ts';
+
+import {Dayjs} from '@offs/core';
+import {useSize} from './hook/useSize';
+import {useFetch} from './hook/useFetch';
 // @ts-ignore
-import { App, Plugin } from 'vue';
+import {App, Plugin} from 'vue';
 import usePaginationFetch from './hook/usePaginationFetch';
 import usePageFetch from './hook/usePageFetch';
-import { type OffsVueFetch, useOffsVueFetch } from './hook/vueFetch';
+import {type OffsVueFetch, useOffsVueFetch} from './hook/vueFetch';
 
 import requestConfig from './config/request';
-import type { PaginationConfig } from './config/request';
+import type {PaginationConfig} from './config/request';
 
 export {
   useFetch,

@@ -16,7 +16,7 @@ export enum Type {
  * @returns {boolean} 如果值是正则表达式则返回true，否则返回false
  */
 function isRegExp(value: any) {
-  return Object.prototype.toString.call(value) === '[object RegExp]';
+  return Object.prototype.toString.call(value) === '[object RegExp]'
 }
 
 /**
@@ -25,27 +25,27 @@ function isRegExp(value: any) {
  * @returns {Type} 实例的类型
  */
 export function type(instance: any) {
-  if (instance === null) return Type.null;
-  if (instance === undefined) return Type.undefined;
-  if (typeof instance === 'function') return Type.func;
-  if (isRegExp(instance)) return Type.reg;
-  if (Array.isArray(instance)) return Type.list;
+  if (instance === null) return Type.null
+  if (instance === undefined) return Type.undefined
+  if (typeof instance === 'function') return Type.func
+  if (isRegExp(instance)) return Type.reg
+  if (Array.isArray(instance)) return Type.list
 
   switch (typeof instance) {
-    case 'string':
-      return Type.string;
-    case 'number':
-      return Type.number;
-    case 'boolean':
-      return Type.bool;
-    case 'object':
-      return Type.dict;
-    default:
-      return Type.dict;
+  case 'string':
+    return Type.string
+  case 'number':
+    return Type.number
+  case 'boolean':
+    return Type.bool
+  case 'object':
+    return Type.dict
+  default:
+    return Type.dict
   }
 }
 
-type NodePath = any[] | string;
+type NodePath = any[] | string
 
 /**
  * 获取对象中指定路径的值
@@ -54,15 +54,37 @@ type NodePath = any[] | string;
  * @returns {any} 指定路径的值
  */
 export const getValue = (obj: any, node?: NodePath | undefined) => {
-  if (!node) return obj;
+  if (!node) return obj
 
-  const nodes = typeof node === 'string' ? node.split('.') : node;
-  if (typeof obj === 'undefined') return undefined;
+  const nodes = typeof node === 'string' ? node.split('.') : node
+  if (typeof obj === 'undefined') return undefined
 
-  let value = obj;
+  let value = obj
   for (const key of nodes) {
-    value = value?.[key];
-    if (typeof value === 'undefined') return undefined;
+    value = value?.[key]
+    if (typeof value === 'undefined') return undefined
   }
-  return value;
-};
+  return value
+}
+
+export type AllType =
+  | 'string'
+  | 'object'
+  | 'number'
+  | 'list'
+  | 'dict'
+  | 'func'
+  | 'reg'
+  | 'bigint'
+  | 'boolean'
+  | 'function'
+  | 'symbol'
+  | 'undefined'
+  | 'null'
+export const $type = (value: any): AllType => {
+  const t = typeof value
+  if (t === 'object' && Array.isArray(value)) {
+    return 'list'
+  }
+  return t
+}

@@ -104,6 +104,7 @@ const selectedKeys = ref<string[]>([route.path])
 //   breadcrumbs.value = findTitlesByKey(props.tree,route.path)
 // })
 
+
 function renderIcon(icon: any | (() => VNode) | undefined): VNode | null {
   if (!icon) return null
   return typeof icon === 'function' ? (icon as Function)() : h(icon)
@@ -112,9 +113,7 @@ function renderIcon(icon: any | (() => VNode) | undefined): VNode | null {
 const menuRef = ref<MenuInstance | null>(null)
 const router = useRouter()
 
-watch(selectedKeys,(val)=>{
-  console.log('-----ssdsd',val)
-})
+
 
 // 监听路由变化，更新选中的菜单项
 watch(

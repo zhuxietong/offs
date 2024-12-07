@@ -6,6 +6,7 @@ declare module '@vue/runtime-core' {
     $day: (t: string, type?: 'cn' | 'en') => string;
     $tf: (t: string, f?: string) => string;
     $int: (v: any) => number;
+    $upx: (x:any) => string;
   }
 }
 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浏览器 User Agent 信息</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #userAgent {
+            background-color: #e9e9e9;
+            padding: 10px;
+            border-radius: 3px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>浏览器 User Agent 信息</h1>
+    <p>您的浏览器 User Agent 是:</p>
+    <div id="userAgent"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var userAgentElement = document.getElementById('userAgent');
+    var userAgent = navigator.userAgent;
+    userAgentElement.textContent = userAgent;
+  });
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 {
   "name": "@offs/uni",
-  "version": "0.0.14",
+  "version": "0.0.22",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
@@ -17,16 +17,21 @@
     "access": "public"
   },
   "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-4020920240930001",
     "@offs/core": "*",
-    "dayjs": "^1.*.*"
+    "dayjs": "^1.*.*",
+    "z-paging": "^2.8.4"
   },
   "peerDependencies": {
     "vue": "^3.*.*",
-    "vue-router": "*",
-    "@dcloudio/uni-app": "3.0.0-4020920240930001"
+    "vue-router": "*"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.2.3",
+    "@dcloudio/types": "^3.4.14",
+    "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-3000020210521001",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "eslint-plugin-vue": "^9.31.0",
     "typescript": "^5.0.2",
     "vite": "*",
     "vue": "^3.*.*",

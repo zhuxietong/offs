@@ -18,14 +18,20 @@
     "baseUrl": ".",
     "noImplicitAny": false,
     "paths": {
-      "@/*": [
+      "#/*": [
         "./src/*"
       ],
     },
-    "types": ["vue"]  // 如果使用 Vite
+    "types": [
+      "vue",
+      "@dcloudio/types",
+      "z-paging/types"
+    ]  // 如果使用 Vite
   },
   "include": [
     "src/**/*",
+    "packages/core/**/*",
+    "packages/uni/**/*",
     "../../node_modules/@dcloudio/types/uni-app/uni/legacy/uni.d.ts",
     "../../node_modules/@dcloudio/types/uni-app/uni/base/request.d.ts"
   ]

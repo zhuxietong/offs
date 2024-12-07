@@ -1,6 +1,6 @@
 {
   "name": "@offs/arco",
-  "version": "0.0.18",
+  "version": "0.0.20",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",

@@ -1,0 +1,20 @@
+{
+    "id": "pr-ui",
+    "name": "pr-ui",
+    "displayName": "pr-ui",
+    "version": "0.230202",
+    "description": "基于vue3 + ts，开发的一款微信小程序ios风格的ui库。",
+    "keywords": [
+        "vue3",
+        "zp-ui",
+        "微信小程序",
+        "ios",
+        "ui"
+    ],
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    }
+}

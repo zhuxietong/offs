@@ -1,3 +1,4 @@
+export {}
 declare global {
   export type PaginationParam = {
     sizeKey?: string;
@@ -99,5 +100,3 @@ declare global {
     use<R>(): UseFetchReturn<R, any>;
   };
 }
-// 确保这个文件被 TypeScript 处理
-export {};

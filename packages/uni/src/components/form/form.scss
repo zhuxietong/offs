@@ -1,0 +1,126 @@
+:root{
+  --form-placeholder-color: rgba(32, 43, 67, 0.5);
+}
+.no-border-bt {
+  outline: none;
+  line-height: normal;
+
+  &:after {
+    border: none;
+  }
+}
+
+
+.no-border-bt {
+  outline: none;
+  line-height: normal;
+
+  &:after {
+    border: none;
+  }
+}
+
+.ui-input-root {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  > span {
+    width: 40upx;
+    height: 40upx;
+    @extend .no-border-bt;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.5;
+    padding: 5upx;
+
+    > img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+
+.ui-input {
+  @extend .fm-value;
+  flex-grow: 1;
+  flex-shrink: 1;
+  width: 100%;
+}
+
+.ui-input::placeholder {
+  @extend .fm-placeholder;
+}
+
+.fm-indicator {
+  flex-grow: 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.fm-value {
+  font-size: 28upx;
+  //font-weight:300;
+  color: rgba(32, 43, 67, 1);
+  padding: 0;
+  margin: 0;
+}
+
+
+.fm-placeholder {
+  color: var(--form-placeholder-color);
+  padding: 0;
+  margin: 0;
+  font-size: 28upx;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 300;
+}
+
+
+.value-style {
+  padding: 8upx 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 10;
+  flex-grow: 1;
+  /*overflow: hidden;*/
+  /*text-overflow: ellipsis;*/
+  /*display: -webkit-box;*/
+  /*-webkit-line-clamp: 1;*/
+  /*line-clamp: 1;*/
+  /*-webkit-box-orient: vertical;*/
+}
+
+.fm-value-display {
+  @extend .fm-value;
+  flex-grow: 1;
+  flex-shrink: 1;
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.fm-value-placeholder {
+  @extend .fm-placeholder;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.fm-value-indicator {
+  flex-grow: 0;
+  flex-shrink: 0;
+}

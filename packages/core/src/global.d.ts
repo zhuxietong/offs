@@ -1,4 +1,4 @@
-import { FetchIntercept } from './utils/fetch';
+import { FetchIntercept } from './utils/fetch'
 
 declare global {
   /**
@@ -38,19 +38,18 @@ declare global {
     after?: (typeof FetchIntercept)['after'];
     failed?: (typeof FetchIntercept)['failed'];
     request?: (body?: any) => Promise<T>;
-    tips?:
-      | {
-          success?: string;
-          error?: string;
-        }
-      | string;
+    tips?: { // 请求成功或失败的提示信息
+        success?: string;
+        error?: string;
+      }
+      | string | 'error'; // 为error时, 不会提示成功，但是会提示失败
   };
 
   export type OffsCoreFetchType = <U extends string, T>(
     url: U,
-    option?: OffsCoreFetchOption<T>,
+    option?: OffsCoreFetchOption<T>
   ) => Promise<T>;
 }
 
 // 确保这个文件被 TypeScript 处理
-export {};
+export {}

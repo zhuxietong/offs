@@ -5,8 +5,8 @@
     "node": true
   },
   "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:vue/vue3-recommended",
+    "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -17,9 +17,20 @@
     "sourceType": "module"
   },
   "plugins": [
+    "vue",
     "@typescript-eslint"
   ],
   "rules": {
+    "vue/no-inline-styles": "off", // 如果是 Vue 项目
+    "vue/script-setup-uses-vars": "error", // 避免 script setup 中的变量被错误标记为未使用
+    "@typescript-eslint/no-namespace": [
+      "error",
+      {
+        "allowDeclarations": true,
+        "allowDefinitionFiles": true
+      }
+    ],
+    "no-async-promise-executor": "off",
     "vue/require-default-prop": "off",
     "vue/multi-word-component-names": "off",
     "@typescript-eslint/no-explicit-any": "off",
