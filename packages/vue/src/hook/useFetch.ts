@@ -91,6 +91,7 @@ export const useFetch = <Resp = any, Body = any>(url: string, options?: OffsVueF
             value = options?.convert(rep);
           }
         } catch (e) {}
+        // @ts-ignore
         data.value = value;
         options?.onSuccess?.(value, rootJson);
         loading.value = false;

@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import dts from 'vite-plugin-dts'
 import { resolve } from 'path'
 
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -15,7 +16,8 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'OffsCore',
-      fileName: (format) => `offs-core.${format}.js`
+      fileName: (format) => `offs-core.${format}.js`,
+      formats: ['es', 'cjs'], // 确保生成 ESM 和 CommonJS 格式
     },
     rollupOptions: {
       external: ['vue', '@offs/core'],

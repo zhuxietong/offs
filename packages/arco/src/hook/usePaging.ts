@@ -71,10 +71,10 @@ function usePaging<Row>(
         }
         if (`${pageIndex}` === `${pageBegin}`) {
           if (Array.isArray(list)) {
-            tableData.value = [...list];
+            tableData.value = [...list] as Row[];
           }
         } else {
-          tableData.value = [...(tableData.value || []), ...(list as any[])];
+          tableData.value = [...(tableData.value || []), ...(list as any[])] as Row[];
         }
       })
       .catch(() => {})
