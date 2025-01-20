@@ -8,6 +8,8 @@ const packages = [
   { name: '@offs/vue', path: 'packages/vue' },
   { name: '@offs/arco', path: 'packages/arco' },
   { name: '@offs/uni', path: 'packages/uni' },
+  { name: '@offs/plugins', path: 'packages/plugins' },
+
 ];
 
 async function selectPackages() {

@@ -10,15 +10,6 @@
       }
     },
     {
-      "path": "pages/refresh/refresh",
-      "style": {
-        "navigationBarTitleText": "uni-app",
-        "navigationBarBackgroundColor": "#F7F8FA",
-        "navigationBarTextStyle": "black",
-        "navigationStyle": "custom"
-      }
-    },
-    {
       "path": "pages/refresh/index",
       "style": {
         "navigationBarTitleText": "uni-app",

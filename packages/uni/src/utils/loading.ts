@@ -1,21 +1,16 @@
-// @ts-ignore
-
 // eslint-disable-next-line no-undef
 export class UNI_HUD implements LoadingActive {
-  info?: { loading?: string; err?: string } | undefined;
-  tipErr = true;
+  info?: any
+  tipErr = true
 
-  constructor(info: { loading?: string; err?: string } | undefined) {
-    this.info = info;
+  constructor(info?: { message: string; ext: any } | string) {
+    this.info = info
   }
 
   end(success: boolean, msg?: string) {
-    if (this.info?.err) {
-      msg = this.info.err;
-    }
     if (success) {
       // @ts-ignore
-      uni.hideLoading();
+      uni.hideLoading()
     } else {
       if (this.tipErr) {
         // @ts-ignore
@@ -23,39 +18,36 @@ export class UNI_HUD implements LoadingActive {
           title: msg || '',
           icon: 'error',
           duration: 2000,
-        });
+        })
       }
     }
   }
 
   start(info?: { message: string; ext: any } | string) {
-    if (this.info?.loading) {
-      info = this.info.loading;
-    }
     switch (typeof info) {
     case 'string':
       // @ts-ignore
       uni.showLoading({
         title: <string>info,
         mask: true,
-      });
-      break;
+      })
+      break
     case 'object':
       // eslint-disable-next-line no-case-declarations
-      const { msg } = <{ msg?: string }>info;
+      const { message } = <{ message?: string }>info
       // @ts-ignore
       uni.showLoading({
-        title: msg || '',
+        title: message || '',
         mask: true,
-      });
-      break;
+      })
+      break
     default:
       // @ts-ignore
       uni.showLoading({
         title: '加载中',
         mask: true,
-      });
-      break;
+      })
+      break
     }
   }
 }

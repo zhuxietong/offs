@@ -1,5 +1,5 @@
 <template>
-  <view class="ui-nav-root">
+  <view class="ui-nav-root" :style="{position:fixed ? 'fixed' : 'static'}">
     <view class="ui-nav">
       <view class="nav-backGround">
         <slot name="background">
@@ -12,7 +12,7 @@
           ></view>
         </slot>
       </view>
-      <view class="ui-nav-body" :style="{ color: '#ffffff' }">
+      <view class="ui-nav-body">
         <view class="ui-status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
         <view class="ui-nav-content" :style="{ height: navContentHeight + 'px', color: color }">
           <view class="nav-left-items">
@@ -44,18 +44,19 @@ const props = withDefaults(defineProps<{
   background?: string;
   fontSize?: number | string;
   title?: string;
-}>(), {});
+  fixed?: boolean;
+}>(), {fixed: true});
 
 const color = computed(() => {
-  return props.color || _UISetting.navProps?.color;
+  return props.color || _offsStyle.nav.color
 });
 
 const background = computed(() => {
-  return props.background || _UISetting?.navProps?.background;
+  return props.background ||  _offsStyle.nav.background
 });
 
 const fontSize = computed(() => {
-  return props.fontSize || _UISetting.navProps.fontSize;
+  return props.fontSize || _offsStyle.nav.font_size
 });
 
 // let titleWidth = ref<number>(_Window.width - 2 * _Window.menuButtonRect.width - 20)
@@ -64,6 +65,7 @@ const statusBarHeight = ref<number>(_Window.statusBarHeight);
 const navContentHeight = ref<number>(_Window.navigationContentHeight);
 
 const back = () => {
+  // @ts-ignore
   _To.back(1);
 };
 </script>

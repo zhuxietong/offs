@@ -1,5 +1,8 @@
 <template>
-  <view class="me-page-detail">
+  <view class="me-page-detail-background">
+    <slot name="background"></slot>
+  </view>
+  <scroll-view class="me-page-scroll" scroll-y>
     <view
       id="navbar"
       v-show="showNav"
@@ -14,16 +17,12 @@
         >
           <template #left>
             <slot name="nav-left">
-              <view @click.stop="onBack">
+              <view>
                 <me-icon name="back_border"></me-icon>
               </view>
             </slot>
           </template>
         </me-navbar>
-      </slot>
-    </view>
-    <view class="me-page-detail-background">
-      <slot name="background">
       </slot>
     </view>
     <view class="me-page-detail-content" :style="{ paddingTop: `${showNav ? navHeight : 0}px` }">
@@ -42,12 +41,12 @@
       <slot name="error">
         <view class="me-page-detail-error">
           <view
-            style="font-weight: normal; font-size: 28rpx; color: 'var(--offs-color-dark5)'"
+            style="font-weight: normal; font-size: 28rpx; color: 'var(--offs-color-text2)'"
           ></view>
         </view>
       </slot>
     </template>
-  </view>
+  </scroll-view>
 </template>
 
 <script setup lang="ts">
@@ -61,7 +60,6 @@ const props = withDefaults(
     showNav?: boolean
     initStatus?: 'loading' | 'error' | 'success'
     inTabContainer?: boolean
-    backgroundColor?:string
   }>(),
   {
     nav: undefined,
@@ -71,20 +69,15 @@ const props = withDefaults(
   },
 )
 
-const onBack = ()=>{
-  // @ts-ignore
-  _To.back()
-}
-
 const status = ref(props.initStatus)
 
 const navHeight = ref(_Window.navigationBarHeight)
 
 const ladingInstance: LoadingActive = {
-  start(_info?: { message: string; ext: unknown } | string) {
+  start(info?: { message: string; ext: unknown } | string) {
     status.value = 'loading'
   },
-  end(success: boolean, _message?: string | { message?: string; errMsg?: string; ext: any }) {
+  end(success: boolean, message?: string | { message?: string; errMsg?: string; ext: any }) {
     status.value = success ? 'success' : 'error'
   },
 }
@@ -112,10 +105,15 @@ defineExpose({
 // });
 </script>
 <style lang="scss">
+
 page {
   background-color: var(--offs-color-fill1);
+  overflow: hidden;
 }
-
+.html {
+  overflow: hidden;
+  height: 100vh;
+}
 .me-page-detail-loading {
   position: fixed;
   z-index: 10;
@@ -143,14 +141,17 @@ page {
   align-items: center;
   justify-content: center;
   gap: 20rpx;
-  background-color: var(--offs-color-light2);
+  background-color: var(--offs-color-fill1);
 }
 
-.me-page-detail {
-  position: relative;
-  width: 100%;
-  flex-grow: 1;
-  overflow: visible;
+.me-page-scroll {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: 2;
+  background-color: transparent;
 }
 
 .me-page-detail-background {

@@ -1,41 +1,18 @@
 import type { UIWindow } from './utils/window'
-import { Pages } from './utils/navigation'
-import type { UISetting } from './props'
 import { FetchIntercept } from '@offs/core/src/utils/fetch'
 import type { Ref, Component, VNode } from 'vue'
+import offsStyle from './style'
 
 declare global {
   const _Window: UIWindow
-  const _Pages: Pages
-  const _UISetting: UISetting
   const _Tops: (
     upx: number,
     isCustomNav?: boolean = false,
   ) => { origin: number; body: number; tabHeight: number }
 
-  interface _JumpAction {
-    back(step: number): void
+  const _offsStyle: typeof offsStyle
 
-    // @ts-ignore
-    push(route: PathRoute | NameRoute | _RouteName, ext?: RouterExt): void
-
-    // @ts-ignore
-    replace(route: PathRoute | NameRoute | _RouteName, ext?: RouterExt): void
-
-    // @ts-ignore
-    reLunch(route: PathRoute | NameRoute | _RouteName, ext?: RouterExt): void
-
-    // @ts-ignore
-    tab(route: PathRoute | NameRoute | _RouteName, ext?: RouterExt): void
-
-    // @ts-ignore
-    callBack(key: string, obj: any): void
-
-    emit(key: string, obj: any): void
-  }
-
-  const _To: _JumpAction
-
+  const _HUD: (info: string) => LoadingActive
 
   interface _PaginationOptions {
     page_size_key: string
@@ -77,8 +54,6 @@ declare global {
 
     value?: LoadingActive
   }
-
-  const _ME: ME
 
   interface _Icon {
     icon: string
@@ -141,7 +116,7 @@ declare global {
   /**
    * Fetch请求初始化选项的类型定义，扩展自RequestInit
    */
-  // @ts-ignore
+  // eslint-disable-next-line no-undef
   export type FetchRequestInit = Omit<RequestInit, 'body'> & {
     body?: any
   }
@@ -204,7 +179,12 @@ declare global {
   type RouteParamGetter = () => { [k: string]: string | boolean | object | number }
 
   export type OffsUniUseFetchOption<T = any, B = any> = {
-    $ext?: string | RouteParamGetter
+    /**附带路由参数提取到 uni.request 的 data 中
+     * true 时表示获取路由的所有查询参数
+     * string 时表示获取路由的指定查询参数，string 的配置逻辑是 @offs/core 中 的extractValues方法的第二个参数
+     * 函数时表示自定义提取方式
+     **/
+    route?: true | string | RouteParamGetter
   } & OffsUniFetchOption<T, B>
 
   export type OffsPagingFetchOption<T, B> = OffsUniFetchOption<T, B, PaginationParam>
@@ -219,12 +199,14 @@ declare global {
   // 定义 useFetch 函数的类型
   export type UseFetchFunction = <Resp = any, Body = any>(
     url: string,
+    // eslint-disable-next-line no-undef
     setting?: OffsVueFetchOption,
   ) => UseFetchReturn<Resp, Body>
 
   export type OffsVueFetchFunction<T extends string> = <T extends string>(
     url: T,
   ) => {
+    // eslint-disable-next-line no-undef
     setting: OffsVueFetchOption
     url: T
     readonly get: any
@@ -234,6 +216,7 @@ declare global {
     readonly manual: any
     readonly create: any
     extract(extract: string | string[] | ExtractValueFunction): any
+    // eslint-disable-next-line no-undef
     option(op: OffsVueFetchOption): any
     use<R>(): UseFetchReturn<R, any>
   }

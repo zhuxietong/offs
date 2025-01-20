@@ -1,4 +1,4 @@
-import { initOffs } from '@/_offs/init'
+import { initOffs } from '@/.offs/init.ts'
 import { createSSRApp } from 'vue'
 import App from './App.vue'
 

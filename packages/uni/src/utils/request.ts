@@ -73,7 +73,6 @@ async function fetchWithTimeout(
  * @param option
  */
 export function Fetch<T>(url: string, option?: OffsUniFetchOption): Promise<T> {
-
   const ops: OffsUniFetchOption = option || {}
 
   const FetchIntercept = offsRequestConfig.intercept
@@ -115,7 +114,9 @@ export function Fetch<T>(url: string, option?: OffsUniFetchOption): Promise<T> {
           raw = (await FetchIntercept.after(ops, raw)) as any
         }
         let data = raw
+
         if (ops.extract) {
+
           if (typeof ops.extract === 'function') {
             data = ops.extract(raw)
           } else {

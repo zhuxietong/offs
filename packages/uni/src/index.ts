@@ -22,6 +22,9 @@ export { useFetch } from './hook/useFetch'
 export { DeepAssign } from './utils/merge'
 export { useNavigation } from './hook/useNavigation'
 export { OffsNode } from './utils/node'
+export { useParam } from './hook/useParam'
+export { UNI_HUD } from './utils/loading'
+export { useStorage } from './hook/useStorage'
 
 // @ts-ignore
 import { App, Plugin } from 'vue'
@@ -47,6 +50,7 @@ export const offsModule: Plugin<any> = {
       return parseInt(`${v}`)
     }
     app.config.globalProperties.$upx = (v: any) => {
+      // eslint-disable-next-line no-undef
       return uni.upx2px(v)
     }
   },

@@ -59,6 +59,9 @@ const styleDisplay = ref<CSSStyleDeclaration>(<CSSStyleDeclaration>{})
 const zIndex = initStyle.zIndex || props.zIndex || 1
 const animation = ref({})
 
+watch(styleDisplay, (val) => {
+  console.log('-------------------styleDisplay-------------------', val)
+})
 const updateStyle = () => {
   switch (props.name) {
     case Animations.fade:

@@ -10,7 +10,9 @@ onHide(() => {
   console.log("App Hide");
 });
 </script>
-<style>
+<style lang="scss">
+@import "./.offs/style";
+
 page {
   background-color: #F7F8FA;
 }

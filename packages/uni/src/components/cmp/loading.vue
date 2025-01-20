@@ -100,7 +100,9 @@ defineExpose({
   end,
 })
 onMounted(() => {
-  start()
+  if(props.initLoading){
+    start()
+  }
 })
 </script>
 

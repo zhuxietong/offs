@@ -1,17 +1,12 @@
-// @ts-ignore
-import {injectOffsUniModule} from "./src/_offs/inject.js";
+import { defineConfig } from 'vite'
+import path from 'path'
 
-import options from "./src/_offs/config.js"
-
-import {defineConfig} from "vite";
-import path from 'path';
-
-import uni from "@dcloudio/vite-plugin-uni";
-
+import uni from '@dcloudio/vite-plugin-uni'
+import { offsStylePlugin, offsRouterPlugin } from './packages/plugins/src/index'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [uni()],
+  plugins: [uni(), offsStylePlugin({ outDir: 'src' }), offsRouterPlugin({})],
   server: {
     port: 9101, // 设置开发服务器的端口号
     host: '0.0.0.0', // 可选：允许外部设备访问
@@ -20,14 +15,12 @@ export default defineConfig({
       ignored: ['!**/packages/**'],
     },
   },
-  define: {
-    _ME: injectOffsUniModule(options)
-  },
   resolve: {
     alias: {
+      '@offs/plugins': path.resolve(__dirname, 'packages/uni/plugins'), // 指定库的路径
       '@offs/uni': path.resolve(__dirname, 'packages/uni/src'), // 指定库的路径
-      '@offs/core': path.resolve(__dirname, 'packages/core/src') // 指定库的路径
+      '@offs/core': path.resolve(__dirname, 'packages/core/src'), // 指定库的路径
     },
   },
-  base: "./", // 确保路径相对
-});
+  base: './', // 确保路径相对
+})

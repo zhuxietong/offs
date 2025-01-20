@@ -5,3 +5,46 @@
   transform: scaleY(0.3);
   height: calc(env(safe-area-inset-bottom) / 1.2);
 }
+
+.offs-btn {
+  font-size: 30rpx;
+  font-weight: bold;
+  border-radius: var(--offs-radius-mid);
+  &.primary {
+    background-color: var(--offs-color-primary1);
+    &&.border {
+      background-color: transparent;
+      border: 1rpx solid var(--offs-color-primary1);
+    }
+  }
+
+  &.success {
+    background-color: var(--offs-color-success1);
+    color: #FFFFFF;
+    &&.border {
+      background-color: transparent;
+      color: var(--offs-color-success1);
+      border: 1rpx solid var(--offs-color-success1);
+    }
+  }
+
+  &.warning {
+    background-color: var(--offs-color-warning1);
+    color: #FFFFFF;
+    &&.border {
+      background-color: transparent;
+      color: var(--offs-color-warning1);
+      border: 1rpx solid var(--offs-color-warning1);
+    }
+  }
+
+  &.error {
+    background-color: var(--offs-color-error1);
+    color: #FFFFFF;
+    &&.border {
+      color: var(--offs-color-error1);
+      background-color: transparent;
+      border: 1rpx solid var(--offs-color-error1);
+    }
+  }
+}

@@ -1,10 +1,9 @@
-import { Fetch } from '../utils/request'
+import { useParam } from '../hook/useParam';
+import { Fetch } from '../utils/request';
 
 // @ts-ignore
-import { onMounted, ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
-import { extractValues } from '@offs/core'
-// import { useRoute } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import { extractValues } from '@offs/core';
 
 /**
  * 提取值的函数类型定义
@@ -14,6 +13,7 @@ export type ExtractValueFunction = (resp: any) => any
 /**
  * Fetch请求初始化选项的类型定义，扩展自RequestInit
  */
+// @ts-ignore
 export type FetchRequestInit = Omit<RequestInit, 'body'> & {
   body?: any
 }
@@ -28,29 +28,6 @@ export type FetchGetter =
   | 'query'
   | 'param'
 
-// const getterFunc = (getter: FetchGetter): object | undefined => {
-//   if (typeof getter === 'function') {
-//     return getter();
-//   } else if (typeof getter === 'object') {
-//     const type = getter.type || 'query';
-//     const route = useRoute();
-//     return type === 'param'
-//       ? extractValues(route.params, getter.extractRule)
-//       : extractValues(route.query, getter.extractRule);
-//   }
-//
-//   return undefined;
-// };
-
-// type HostGet = (url: string) => string;
-// let hostGet: HostGet = (_url) => {
-//   return '';
-// };
-//
-// export const setHookHost = (getBlock: HostGet) => {
-//   hostGet = getBlock;
-// };
-
 /**
  * 自定义的Fetch请求钩子
  * @template Resp - 响应的类型
@@ -59,29 +36,28 @@ export type FetchGetter =
  * @param {OffsUniUseFetchOption} [options] - 可选的Fetch请求设置
  * @returns {{ data: Ref<Resp>, loading: Ref<boolean>, run: (body?: Body) => Promise<any> }} - 数据、加载状态和运行函数
  */
+// eslint-disable-next-line no-undef
 export const useFetch = <Resp = any, Body = any>(url: string, options?: OffsUniUseFetchOption) => {
-  const data = ref<Resp>([] as Resp)
-  const loading = ref(false)
+
+  const data = ref<Resp>([] as Resp);
+  const loading = ref(false);
   // const run = (body?: Body) => {
   //   return fetch(url, setting?.init || {})
   // }
   // return {data,loding,run}
 
-  let op = {}
-  onLoad((_op: any) => {
-    op = _op
-  })
+  let op = {};
 
   const getQueryParams = () => {
-    if (typeof options?.$ext === 'function') {
+    if (typeof options?.route === 'function') {
       // @ts-ignore
-      return options.$rq(op)
+      return options.route(op);
     }
-    if (typeof options?.$ext === 'string') {
-      return extractValues(op, options.$ext)
+    if (typeof options?.route === 'string') {
+      return extractValues(op, options.route);
     }
-    return undefined
-  }
+    return undefined;
+  };
 
   /**
    * 执行Fetch请求
@@ -89,53 +65,77 @@ export const useFetch = <Resp = any, Body = any>(url: string, options?: OffsUniU
    * @returns {Promise<any>} - Fetch响应
    */
   const run = (body?: Body) => {
-    loading.value = true
-    const userGetRootUser = options?.onGetRootJson
-    let rootJson: any = undefined
+    console.log("-ssssss-ss--ss--ss",body)
+
+    loading.value = true;
+    const userGetRootUser = options?.onGetRootJson;
+    let rootJson: any = undefined;
     if (options) {
       options.onGetRootJson = (json: any) => {
         if (userGetRootUser) {
-          userGetRootUser(json)
+          userGetRootUser(json);
         }
-        rootJson = json
-      }
+        rootJson = json;
+      };
     }
 
     const dialog = () => {
-      return (options?.dialog?.value || options?.dialog) as (LoadingActive | undefined)
-    }
-    const ext = getQueryParams() || {}
+      // eslint-disable-next-line no-undef
+      return (options?.dialog?.value || options?.dialog) as (LoadingActive | undefined);
+    };
+    const ext = getQueryParams() || {};
     if (!options) {
-      options = {} as any
+      options = {} as any;
     }
-    options!.data = { ...ext, ...options!.data }
-    dialog()?.start()
+    options!.data = { ...ext, ...options!.data, ...(body || {}) };
+    try {
+      dialog()?.start?.();
+
+    }catch (e) {
+
+    }
     return Fetch(url, options)
       .then((rep) => {
-        let value = rep
+        let value = rep;
         try {
           if (options?.convert) {
-            value = options?.convert(rep)
+            value = options?.convert(rep);
           }
-        } catch (e) {}
+        } catch (e) {
+        }
         // @ts-ignore
-        data.value = value
-        options?.onSuccess?.(value, rootJson)
-        dialog()?.end(true)
-        loading.value = false
+        data.value = value;
+        options?.onSuccess?.(value, rootJson);
+        try {
+          dialog()?.end?.(true);
+        }catch (e) {
+
+        }
+        loading.value = false;
       })
       .catch((e) => {
-        dialog()?.end(false, e)
-        loading.value = false
-        options?.onFailed?.(e, body)
-      })
-  }
+        try {
+          dialog()?.end?.(false, e);
+        }catch (e) {
+
+        }
+        loading.value = false;
+        options?.onFailed?.(e, body);
+      });
+  };
+
+  useParam((param) => {
+    op = param;
+  });
 
   onMounted(() => {
     if (!options?.manual)
       run(options?.data as Body)
-        .then(() => {})
-        .catch(() => {})
-  })
-  return { data, loading, run }
-}
+        .then(() => {
+        })
+        .catch(() => {
+        });
+  });
+
+  return { data, loading, run };
+};

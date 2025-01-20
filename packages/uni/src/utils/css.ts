@@ -74,8 +74,11 @@ export class CssUntil {
         for (const item of attr) {
           let k = item.replace(/:\s*[\w-#$\\(\\)]+/g, '');
           k = k.replace(/^\s/g, '').replace(/\s$/g, '');
-          let v = item.replace(/[\w-#$\\(\\)]+:/g, '');
+          let v:any = item.replace(/[\w-#$\\(\\)]+:/g, '');
           v = v.replace(/^\s/g, '').replace(/\s$/g, '');
+          if(/\\d/.test(v)){
+            v = parseInt(v);
+          }
           values[k] = v;
         }
       }

@@ -5,7 +5,7 @@
       :scroll-x="scroll"
       :scroll-left="scroll ? scrollLeft : 0"
       :scroll-with-animation="scroll"
-      :style="{ position: fixed ? 'fixed' : 'relative', zIndex: 1993, width: '100%' }"
+      :style="{ position: fixed ? 'fixed' : 'relative',zIndex:100, width: '100%',...outStyle }"
     >
       <view class="v-tabs__container" :style="containerStyle_">
         <view
@@ -26,7 +26,9 @@
           v-else
           :class="['v-tabs__container-line', { animation: lineStyle?.animation && isMounted }]"
           :style="lineStyle_"
-        ></view>
+        >
+          <view :style="lineIndicatorStyle"></view>
+        </view>
       </view>
     </scroll-view>
     <view class="v-tabs__placeholder" :style="holderStyle_"></view>
@@ -42,6 +44,22 @@ export interface TabStyle {
   height?: string
   padding?: string
 }
+
+const outStyle = computed(()=>{
+  let style:any = {
+  }
+  const justCenter = {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    itemAlign: 'center',
+    width: '100%'
+  }
+  if (props.center) {
+    style = { ...style, ...justCenter }
+  }
+  return style
+})
 
 export interface NormalActiveStyle {
   color?: string
@@ -69,8 +87,9 @@ export interface PillStyle {
   scale?: string
 }
 
-const tint: string = _UISetting.colors.primary
-const fontColor: string = _UISetting.colors.front_normal
+const tint: string = _offsStyle.color.primary1
+const fontColor: string = _offsStyle.color.dark1
+
 const props: any = withDefaults(
   defineProps<{
     modelValue?: number
@@ -87,6 +106,7 @@ const props: any = withDefaults(
     bold?: boolean
     pills?: boolean
     gap?: number
+    center?:boolean
   }>(),
   {
     scroll: true,
@@ -141,12 +161,15 @@ const isPills = computed(() => {
 })
 
 const containerStyle_ = computed(() => {
+
   let style: any = {
     display: props.scroll ? 'inline-flex' : 'flex',
-    gap: '20rpx',
+    gap: props.gap + 'px',
     whiteSpace: props.scroll ? 'nowrap' : 'normal',
     background: props.tabStyle?.background || '#ffffff00',
   }
+
+
   if (props.tabStyle.height) {
     style.height = props.tabStyle.height
   }
@@ -161,7 +184,7 @@ const itemStyle_ = (i: number) => {
   const isSelect = value.value == i
   console.log('isSelect', isSelect ? props.activeStyle.fontSize : props.normalStyle.fontSize)
   let style: any = {
-    fontSize: isSelect ? props.activeStyle.fontSize : props.normalStyle.fontSize,
+    fontSize: isSelect ? props.normalStyle.fontSize : props.normalStyle.fontSize,
     fontWeight: props.bold && value.value == i ? 'bold' : '',
     justifyContent: props.scroll ? 'center' : 'center',
     flex: props.scroll ? '' : 1,
@@ -176,13 +199,28 @@ const itemStyle_ = (i: number) => {
   return style
 }
 const lineStyle_ = computed(() => {
+  let index = value.value
+  let gapOffX = props.gap * index
+  let style: any = {
+    background: 'transparent',
+    // background: 'red',
+    width: currentWidth.value + 'px',
+    height: props.lineStyle?.height,
+    left: pillsLeft.value + gapOffX + 'px',
+    display: 'flex',
+    flexDirection: 'row',
+    itemAlign: 'center',
+    justifyContent: 'center',
+  }
+  return style
+})
+
+const lineIndicatorStyle = computed(() => {
   let style: any = {
     background: props.lineStyle?.color || tint,
     width: lineWidth.value + 'px',
     height: props.lineStyle?.height,
     borderRadius: props.lineStyle?.radius,
-    left: lineLeft.value + 'px',
-    transform: `translateX(-${lineWidth.value / 2}px)`,
   }
   return style
 })
@@ -191,7 +229,7 @@ const pillStyle_ = computed(() => {
   let index = value.value
   let gapOffX = props.gap * index
   let style: any = {
-    background: props.pillStyle?.color || tint,
+    background: props.pillStyle?.background || tint,
     borderRadius: props.pillStyle?.radius || uni.upx2px(10) + 'px',
     left: pillsLeft.value + gapOffX + 'px',
     width: currentWidth.value + 'px',
@@ -318,7 +356,7 @@ watch(
 )
 watch(
   () => props.modelValue,
-  (val: any) => [
+  () => [
     nextTick(() => {
       getTabItemWidth()
     }),
