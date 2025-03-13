@@ -78,6 +78,7 @@ export interface LineStyle {
   scale?: string
   animation?: boolean
   background?: string
+  padding?: string
 }
 
 export interface PillStyle {
@@ -85,6 +86,7 @@ export interface PillStyle {
   radius?: string
   color?: string
   scale?: string
+  padding?: string
 }
 
 const tint: string = _offsStyle.color.primary1
@@ -113,27 +115,31 @@ const props: any = withDefaults(
     bold: true,
     pills: false,
     gap: 10,
-    tabStyle: {
+    tabStyle: ()=>({
       height: uni.upx2px(100) + 'px',
       background: '#ffffff',
-    },
-    normalStyle: {
+    }),
+    normalStyle: ()=>({
       fontSize: uni.upx2px(24) + 'px',
-    },
-    activeStyle: {
+    }),
+    activeStyle: ()=>({
       fontSize: uni.upx2px(28) + 'px',
-    },
-    lineStyle: {
+    }),
+    lineStyle: ()=>({
       height: uni.upx2px(4) + 'px',
       animation: true,
-    },
-    pillStyle: {
-      radius: uni.upx2px(8) + 'px',
-    },
-    itemStyle: {
-      padding: `${uni.upx2px(8)}px ${uni.upx2px(22)}px`,
-    },
-  } as any,
+    }),
+    pillStyle: ()=>(
+      {
+        radius: uni.upx2px(8) + 'px',
+      }
+    ),
+    itemStyle: ()=>(
+      {
+        padding: `${uni.upx2px(8)}px ${uni.upx2px(22)}px`,
+      }
+    ),
+  },
 )
 let emit = defineEmits(['update:modelValue', 'change'])
 

@@ -1,6 +1,6 @@
 {
   "name": "@offs/core",
-  "version": "0.0.31",
+  "version": "0.0.34",
   "type": "module",
   "module": "dist/offs-core.es.js",
   "types": "dist/index.d.ts",

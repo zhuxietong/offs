@@ -3,7 +3,7 @@ import { PublishSub, DisposeBag } from '@offs/core'
 import { queueMap } from '@offs/core'
 
 type AllType =
-  'string'
+  | 'string'
   | 'object'
   | 'number'
   | 'list'
@@ -34,7 +34,6 @@ export class DebugBool {
     this.name = name
   }
 
-
   get ok(): boolean {
     return this.value
   }
@@ -53,8 +52,6 @@ export class DebugBool {
     this.value = ok
     return ok
   }
-
-
 }
 
 const regs = {
@@ -63,32 +60,30 @@ const regs = {
   email: /^([a-zA-Z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
   username: /^([\u4e00-\u9fa5]{1,20}|[a-zA-Z\.\s]{1,20})$/,
   mobile: /^[1][3,4,5,7,8,9][0-9]{9}$/,
-  desc: /^\.{4,}$/
+  desc: /^\.{4,}$/,
 }
 
 export interface NumberLimit {
-  min: number,
-  max: number,
-  minTip: string,
+  min: number
+  max: number
+  minTip: string
   maxTip: string
 }
 
-
 export type BaseFieldProps = {
-  modelValue: any,
-  holderStyle?: CSSStyleDeclaration,
-  valueStyle?: CSSStyleDeclaration,
-  check?: Checker,
-  name: string,
-  label: string,
-  placeholder?: string,
-  textAlign?: 'left' | 'right' | 'center',
+  modelValue: any
+  holderStyle?: CSSStyleDeclaration
+  valueStyle?: CSSStyleDeclaration
+  check?: Checker
+  name: string
+  label: string
+  placeholder?: string
+  textAlign?: 'left' | 'right' | 'center'
 }
-
 
 type CheckerFunc = (value: any) => boolean
 export type Checker =
-  string
+  | string
   | RegExp
   | NumberLimit
   | CheckerFunc
@@ -100,8 +95,8 @@ export type Checker =
   | ''
 
 export interface CheckResult {
-  value?: any,
-  message: string,
+  value?: any
+  message: string
   ok: boolean
 }
 
@@ -110,7 +105,7 @@ export enum CheckTrigger {
   preCheck = 'preCheck',
   focus = 'focus',
   blur = 'blur',
-  submit = 'submit'
+  submit = 'submit',
 }
 
 export enum Interact {
@@ -121,61 +116,58 @@ export enum Interact {
 
 function interactName(interact: Interact) {
   switch (interact) {
-  case Interact.input:
-    return '输入'
-  case Interact.select:
-    return '选择'
-  case Interact.setting:
-    return '设置'
-  default:
-    return '输入'
+    case Interact.input:
+      return '输入'
+    case Interact.select:
+      return '选择'
+    case Interact.setting:
+      return '设置'
+    default:
+      return '输入'
   }
 }
 
-
 export interface FieldProps {
-  name: string,
-  label: string,
-  check: Checker,
-  required: boolean,
-  placeholder: string,
-  checkTrigger: CheckTrigger[],
-  interact: Interact,
-  disabled: boolean,
+  name: string
+  label: string
+  check: Checker
+  required: boolean
+  placeholder: string
+  checkTrigger: CheckTrigger[]
+  interact: Interact
+  disabled: boolean
   valueGen: ValueGen
-
 }
 
 export interface FieldInit {
-  name: string,
-  label: string,
-  required?: boolean,
-  placeholder?: string | undefined,
-  checkTrigger?: CheckTrigger[],
-  interact?: Interact,
+  name: string
+  label: string
+  required?: boolean
+  placeholder?: string | undefined
+  checkTrigger?: CheckTrigger[]
+  interact?: Interact
   check?: Checker
-  blankTip?: string,
-  errorTip?: string,
-  disabled?: boolean,
-  valueGen?: ValueGen,
+  blankTip?: string
+  errorTip?: string
+  disabled?: boolean
+  valueGen?: ValueGen
   debug?: boolean
   transform?: (val: any) => { [k: string]: any }
 }
 
 export interface FieldSetting {
-  name?: string,
-  label?: string,
-  valueType?: any,
-  required?: boolean,
-  placeholder?: string,
-  checkTrigger?: CheckTrigger[],
-  interact?: Interact,
+  name?: string
+  label?: string
+  valueType?: any
+  required?: boolean
+  placeholder?: string
+  checkTrigger?: CheckTrigger[]
+  interact?: Interact
   check?: Checker
-  blankTip?: string,
-  errorTip?: string,
+  blankTip?: string
+  errorTip?: string
   disabled?: boolean
 }
-
 
 export type ValueGen = (rawValue: any) => any
 export type UpdateTip = (result: CheckResult | undefined) => any
@@ -213,14 +205,14 @@ export class LazyPromise<T> implements PromiseLike<T> {
 
   public then<TResult1 = T, TResult2 = never>(
     onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
   ): Promise<TResult1 | TResult2> {
     // Placeholder, will be overwritten in constructor
     return this.promise!.then(onfulfilled, onrejected)
   }
 
   public catch<TResult = never>(
-    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null
+    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null,
   ): Promise<T | TResult> {
     // Placeholder, will be overwritten in constructor
     return this.promise!.catch(onrejected)
@@ -241,7 +233,6 @@ export class LazyPromise<T> implements PromiseLike<T> {
 //     }, 2000);
 //   });
 // });
-
 
 export class Field implements FieldProps {
   name = ''
@@ -270,9 +261,11 @@ export class Field implements FieldProps {
   private _preField?: Field
   set preField(val: Field | undefined) {
     if (this._preField !== undefined) {
-      val?.$value.subscribe((_e: any) => {
-        this.value = {}
-      }).disposedBy(this.bag)
+      val?.$value
+        .subscribe((_e: any) => {
+          this.value = {}
+        })
+        .disposedBy(this.bag)
     }
     this._preField = val
   }
@@ -287,8 +280,7 @@ export class Field implements FieldProps {
   disabled: boolean = false
   tipEle?: any
   tureSubmitValue?: any
-  updateTip: UpdateTip = (_result: CheckResult | undefined) => {
-  }//提交时触发该方法
+  updateTip: UpdateTip = (_result: CheckResult | undefined) => {} //提交时触发该方法
   $value: PublishSub<any>
 
   update(result: any) {
@@ -308,7 +300,7 @@ export class Field implements FieldProps {
           // @ts-ignore
           uni.showToast({
             title: r.message,
-            icon: 'none'
+            icon: 'none',
           })
         }
       }
@@ -342,14 +334,9 @@ export class Field implements FieldProps {
       blankTip,
       disabled,
       debug: debug,
-      transform
-
+      transform,
     } = init
-    let {
-      label, required,
-      placeholder,
-      interact
-    } = init
+    let { label, required, placeholder, interact } = init
     this.transform = transform
     this.$value = new PublishSub<any>()
     label = label || '内容'
@@ -363,8 +350,7 @@ export class Field implements FieldProps {
         if ((<NumberLimit>check).max) {
           isList = true
         }
-      } catch (e) {
-      }
+      } catch (e) {}
     } else if (typeof check === 'string') {
       if (/^(\d+)~(\d+)$/g.test(<string>check)) {
         isList = true
@@ -375,8 +361,8 @@ export class Field implements FieldProps {
     }
 
     interact = interact || Interact.input
-    required = (required != undefined) ? required : true
-    placeholder = placeholder || ('请' + interactName(interact) + label)
+    required = required != undefined ? required : true
+    placeholder = placeholder || '请' + interactName(interact) + label
     this.label = label
     this.name = name || 'xx'
     this.check = check || ''
@@ -404,7 +390,6 @@ export class Field implements FieldProps {
     return false
   }
 
-
   doCheck(trigger: CheckTrigger): CheckResult | undefined {
     const value = this.value
     if (!this.needCheck(trigger)) {
@@ -417,124 +402,121 @@ export class Field implements FieldProps {
     let result = value
 
     switch (typeof value) {
-    case 'undefined':
-      if (!required) {
-        return undefined
-      }
-      break
-    default:
-      break
+      case 'undefined':
+        if (!required) {
+          return undefined
+        }
+        break
+      default:
+        break
     }
 
     result = this.value
     let check = this.check
 
     switch (typeof check) {
-    case 'string':
-      if (/^\[(.+)\]$/.test(<string>check)) {
-        const names = /^\[(.+)\]$/g.exec(<string>check) || []
-        if (names.length > 0) {
-          try {
-            const regName = names[1]
-            // @ts-ignore
-            const fastReg = regs[regName]
-            if (fastReg) {
-              check = fastReg
-            }
-          } catch (e) {
+      case 'string':
+        if (/^\[(.+)\]$/.test(<string>check)) {
+          const names = /^\[(.+)\]$/g.exec(<string>check) || []
+          if (names.length > 0) {
+            try {
+              const regName = names[1]
+              // @ts-ignore
+              const fastReg = regs[regName]
+              if (fastReg) {
+                check = fastReg
+              }
+            } catch (e) {}
           }
-        }
-      } else if (`${check}` === '>0') {
-        check = <NumberLimit>{
-          min: 1,
-          max: 10,
-          minTip: `${this.placeholder}`,
-          maxTip: `最多${interactName(this.interact)}`
-        }
-      } else if (/^(\d+)~(\d+)$/g.test(<string>check)) {
-        const names: any = /^(\d+)~(\d+)$/g.exec(<string>check) || []
-        if (names.length > 2) {
-          try {
-            const nums = names.slice(1, 3).map((e: string): number => {
-              return parseInt(e)
-            })
-            check = <NumberLimit>{
-              min: nums[0],
-              max: nums[1],
-              minTip: `请至少${interactName(this.interact)}${nums[0]}个${this.label}`,
-              maxTip: `最多${interactName(this.interact)}${nums[1]}个${this.label}`
-            }
-            this.check = check
-          } catch (e) {
+        } else if (`${check}` === '>0') {
+          check = <NumberLimit>{
+            min: 1,
+            max: 10,
+            minTip: `${this.placeholder}`,
+            maxTip: `最多${interactName(this.interact)}`,
           }
+        } else if (/^(\d+)~(\d+)$/g.test(<string>check)) {
+          const names: any = /^(\d+)~(\d+)$/g.exec(<string>check) || []
+          if (names.length > 2) {
+            try {
+              const nums = names.slice(1, 3).map((e: string): number => {
+                return parseInt(e)
+              })
+              check = <NumberLimit>{
+                min: nums[0],
+                max: nums[1],
+                minTip: `请至少${interactName(this.interact)}${nums[0]}个${this.label}`,
+                maxTip: `最多${interactName(this.interact)}${nums[1]}个${this.label}`,
+              }
+              this.check = check
+            } catch (e) {}
+          }
+        } else {
+          check = new RegExp(<string>check)
         }
-      } else {
-        check = new RegExp(<string>check)
-      }
-      break
-    case 'function':
-      // @ts-ignore
-      ok.ok = check(value)
-      break
-    default:
-      break
+        break
+      case 'function':
+        // @ts-ignore
+        ok.ok = check(value)
+        break
+      default:
+        break
     }
 
     switch ($type(value)) {
-    case 'undefined':
-      ok.ok = false
-      break
-    case 'list':
-      if (typeof check === 'object') {
-        // @ts-ignore
-        if (check.max) {
-          const limit = <NumberLimit>check
-          if ((result).length > limit.max) {
-            return { ok: ok.update(false), message: limit.maxTip }
+      case 'undefined':
+        ok.ok = false
+        break
+      case 'list':
+        if (typeof check === 'object') {
+          // @ts-ignore
+          if (check.max) {
+            const limit = <NumberLimit>check
+            if (result.length > limit.max) {
+              return { ok: ok.update(false), message: limit.maxTip }
+            }
+            if (result.length < limit.min) {
+              return { ok: ok.update(false), message: limit.minTip }
+            }
           }
-          if ((result).length < limit.min) {
-            return { ok: ok.update(false), message: limit.minTip }
-          }
-        }
-      } else if ((typeof check === 'function')) {
-        ok.ok = check(value)
-      } else {
-        if ((<any[]>this.value).length < 1) {
-          ok.ok = false
-        }
-      }
-      break
-    case 'object':
-      if (typeof check === 'object') {
-        // @ts-ignore
-        if (check.max) {
-          const limit = <NumberLimit>check
-          if ((result).length > limit.max) {
-            return { ok: false, message: limit.maxTip }
-          }
-          if ((result).length < limit.min) {
-            return { ok: false, message: limit.minTip }
+        } else if (typeof check === 'function') {
+          ok.ok = check(value)
+        } else {
+          if ((<any[]>this.value).length < 1) {
+            ok.ok = false
           }
         }
-      } else if ((typeof check === 'function')) {
-        ok.ok = check(value)
+        break
+      case 'object':
+        if (typeof check === 'object') {
+          // @ts-ignore
+          if (check.max) {
+            const limit = <NumberLimit>check
+            if (result.length > limit.max) {
+              return { ok: false, message: limit.maxTip }
+            }
+            if (result.length < limit.min) {
+              return { ok: false, message: limit.minTip }
+            }
+          }
+        } else if (typeof check === 'function') {
+          ok.ok = check(value)
+        } else {
+          if ((<any[]>this.value).length < 1) {
+            ok.ok = false
+          }
+        }
+        break
 
-      } else {
-        if ((<any[]>this.value).length < 1) {
-          ok.ok = false
+      case 'string':
+        if ($type(check) === 'reg') {
+          ok.ok = (<RegExp>check).test(<string>value)
         }
-      }
-      break
-
-    case 'string':
-      if ($type(check) === 'reg') {
-        ok.ok = (<RegExp>check).test(<string>value)
-      }
-      break
-    case 'function':
-      // @ts-ignore
-      ok = check(value)
-      break
+        break
+      case 'function':
+        // @ts-ignore
+        ok = check(value)
+        break
     }
     console.warn(this.name, value)
 
@@ -549,7 +531,7 @@ export class Field implements FieldProps {
       }
     }
     if ($type(value) === 'list') {
-      if ((value).length < 1) {
+      if (value.length < 1) {
         badTip = this.blankTip
       }
     }
@@ -559,18 +541,15 @@ export class Field implements FieldProps {
       }
     }
 
-
     return {
       ok: ok.ok,
       message: ok.ok ? 'success' : badTip,
-      value: this.submitValue()
+      value: this.submitValue(),
     }
   }
 }
 
-
 export class FormCheck {
-
   allFields: Field[] = []
 
   findField(name: string): Field | undefined {
@@ -582,16 +561,18 @@ export class FormCheck {
     return undefined
   }
 
-
   constructor(fields: Field[] | null) {
     if (fields) {
       this.allFields = <Field[]>fields
     }
   }
 
-  submitNames(fieldNames: string[], autoTip: boolean = true): {
-    ok: boolean,
-    message: string,
+  submitNames(
+    fieldNames: string[],
+    autoTip: boolean = true,
+  ): {
+    ok: boolean
+    message: string
     values: { [k: string]: any }
   } {
     const fields: Field[] = []
@@ -605,9 +586,12 @@ export class FormCheck {
     return this.submitFields(fields, autoTip)
   }
 
-  submitFields(fields: Field[], _autoTip = true): {
-    ok: boolean,
-    message: string,
+  submitFields(
+    fields: Field[],
+    _autoTip = true,
+  ): {
+    ok: boolean
+    message: string
     values: { [k: string]: any }
   } {
     const values: { [k: string]: any } = {}
@@ -625,9 +609,12 @@ export class FormCheck {
     return { ok: true, values, message: 'success' }
   }
 
-  async asyncParser(tip: 'none' | 'toast' | 'tips' = 'toast', loadingText?: string): Promise<{
-    ok: boolean;
-    values: any;
+  async asyncParser(
+    tip: 'none' | 'toast' | 'tips' = 'toast',
+    loadingText?: string,
+  ): Promise<{
+    ok: boolean
+    values: any
     msg?: string
   }> {
     const result = this.parser(tip)
@@ -638,7 +625,7 @@ export class FormCheck {
       }
       const values = result.values
       const keys = Object.keys(values || {})
-      const asyncList: { name: string, value: LazyPromise<any> }[] = []
+      const asyncList: { name: string; value: LazyPromise<any> }[] = []
 
       for (const key of keys) {
         const value = values[key]
@@ -647,23 +634,19 @@ export class FormCheck {
             if (value.LazyPromise) {
               asyncList.push({
                 name: key,
-                value
+                value,
               })
             } else if (`${value.constructor.name}` === 'LazyPromise') {
               asyncList.push({
                 name: key,
-                value
+                value,
               })
             } else {
-
             }
-
           } else {
             console.log('------has nos', value)
-
           }
-        } catch (e) {
-        }
+        } catch (e) {}
       }
 
       try {
@@ -672,12 +655,15 @@ export class FormCheck {
         if (asyncList.length > 0) {
           // @ts-ignore
           uni.showLoading({
-            title: loadingText ?? '正在上传'
+            title: loadingText ?? '正在上传',
           })
-          const res = await queueMap<{ name: string, value: LazyPromise<any> }, {
-            name: string,
-            value: any
-          }>(asyncList, ({ name, value }) => {
+          const res = await queueMap<
+            { name: string; value: LazyPromise<any> },
+            {
+              name: string
+              value: any
+            }
+          >(asyncList, ({ name, value }) => {
             return new Promise(async (resolve_, reject_) => {
               try {
                 // let one = await value.run()
@@ -699,16 +685,12 @@ export class FormCheck {
         // @ts-ignore
         uni.showToast({
           icon: 'none',
-          title: '上传失败'
+          title: '上传失败',
         })
         reject(e)
       }
-
-
     })
-
   }
-
 
   parser(tip: 'none' | 'toast' | 'tips' = 'toast'): { ok: boolean; values: any; msg?: string } {
     const fields = this.allFields
@@ -726,7 +708,7 @@ export class FormCheck {
               uni.showToast({
                 title: check.message,
                 icon: 'error',
-                duration: 1200
+                duration: 1200,
               })
             }
             return { ok: false, msg: check.message, values: {} }
@@ -754,13 +736,12 @@ export class FormCheck {
       // @ts-ignore
       uni.showToast({
         title: '请检查提交内容',
-        icon: 'error'
+        icon: 'error',
       })
     }
 
     return { ok: ok, values, msg: ok ? 'success' : err_tips.join('|') }
   }
-
 
   valid(options?: { tip?: 'none' | 'toast' | 'cell' }): Promise<{ [k: string]: any }> {
     const ops = { tip: 'none', ...options }
@@ -802,10 +783,9 @@ export class FormCheck {
           if (`${value.constructor.name}` === 'LazyPromise') {
             try {
               result[key] = await value.run()
-            } catch (e:any) {
+            } catch (e: any) {
               errors.push(e.message)
             }
-
           }
         }
       }
@@ -815,9 +795,7 @@ export class FormCheck {
       }
       resolve(result)
     })
-
   }
-
 }
 
 export function runCheckDemo() {
@@ -836,5 +814,3 @@ export function runCheckDemo() {
 }
 
 // runCheckDemo()
-
-

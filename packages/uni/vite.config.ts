@@ -11,14 +11,9 @@ export default defineConfig({
     dts({
       include: ['src/**/*.ts', 'src/**/*.d.ts', 'src/vue-extensions.d.ts', 'src/**/*.vue'],
       outDir: 'dist/types',
-      copyDtsFiles: true
+      copyDtsFiles: true,
     }),
   ],
-  resolve: {
-    alias: {
-      '#': path.resolve(__dirname, 'src'), // 指定库的路径
-    },
-  },
   preprocessorOptions: {
     scss: {
       additionalData: `@use "./src/components/form/form.scss" as *;

@@ -17,19 +17,19 @@
     "emitDeclarationOnly": false,
     "baseUrl": ".",
     "noImplicitAny": false,
-    "paths": {
-      "#/*": [
-        "./src/*"
-      ],
-    },
     "types": [
-      "vue",
       "@dcloudio/types",
       "z-paging/types"
     ]  // 如果使用 Vite
   },
   "include": [
+    "src/form.d.ts",
+    "src/env.d.ts",
+    "src/components/fm/fm.d.ts",
     "src/**/*",
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.vue",
     "packages/core/**/*",
     "packages/uni/**/*",
     "../../node_modules/@dcloudio/types/uni-app/uni/legacy/uni.d.ts",

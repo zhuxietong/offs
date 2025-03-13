@@ -9,8 +9,8 @@ if (typeof globalThis._ME === 'undefined') {
 // 更新路由配置
 globalThis._ME.ROUTES = [
   {
-    "name": "pages_index_index",
-    "path": "pages/index/index",
+    "name": "pages_refresh_index",
+    "path": "pages/refresh/index",
     "style": {
       "navigationBarTitleText": "uni-app",
       "navigationBarBackgroundColor": "#F7F8FA",
@@ -19,8 +19,8 @@ globalThis._ME.ROUTES = [
     }
   },
   {
-    "name": "pages_refresh_index",
-    "path": "pages/refresh/index",
+    "name": "pages_index_index",
+    "path": "pages/index/index",
     "style": {
       "navigationBarTitleText": "uni-app",
       "navigationBarBackgroundColor": "#F7F8FA",

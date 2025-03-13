@@ -1,7 +1,7 @@
 {
   "pages": [
     {
-      "path": "pages/index/index",
+      "path": "pages/refresh/index",
       "style": {
         "navigationBarTitleText": "uni-app",
         "navigationBarBackgroundColor": "#F7F8FA",
@@ -10,7 +10,7 @@
       }
     },
     {
-      "path": "pages/refresh/index",
+      "path": "pages/index/index",
       "style": {
         "navigationBarTitleText": "uni-app",
         "navigationBarBackgroundColor": "#F7F8FA",
@@ -30,15 +30,13 @@
   "easycom": {
     "autoscan": true,
     "custom": {
-      "me-page-(.*)": "@offs/uni/components/page/$1.vue",
-      "me-form-(.*)": "@offs/uni/components/form/$1.vue",
-      "me-field-(.*)": "@offs/uni/components/field/$1.vue",
-      "me-base-(.*)": "@offs/uni/components/base/$1.vue",
+      "me-icon": "@/.offs/gen/components/icon/index.vue",
       "me-cmp-(.*)": "@offs/uni/components/cmp/$1.vue",
-      "me-icon": "@offs/uni/components/icon/icon.vue",
+      "me-cmp-([\\w]+)-(.*)": "@offs/uni/components/$-$2.vue",
+      "me-([\\w]+)-([\\w]+)-(.*)": "@offs/uni/components/$1/$2/$3.vue",
+      "me-([\\w]+)-([\\w]+)": "@offs/uni/components/$1/$2.vue",
       "me-(.*)": "@offs/uni/components/$1.vue",
       "^(?!z-paging-refresh|z-paging-load-more)z-paging(.*)": "z-paging/components/z-paging$1/z-paging$1.vue"
-
     }
   }
 }

@@ -14,7 +14,6 @@
       :onSelectionChange="onSelectionChange"
       :pagination="(loadMode === 'one-load' ? true : {
         ...pagination,
-        size: size,
       }) as any"
       @page-change="changePageIndex"
       @page-size-change="changePageSize"
@@ -23,11 +22,15 @@
 </template>
 
 <script setup lang="ts">
-import type { TableBorder, TableColumnData, TableRowSelection } from '@arco-design/web-vue';
+import type { TableBorder, TableRowSelection } from '@arco-design/web-vue';
+import { defineProps, defineEmits, defineExpose, withDefaults, watch } from 'vue';
 import usePaging from '../hook/usePaging';
 
+const emit = defineEmits(['update:data']);
+
 type TableProps = Partial<{
-  columns: TableColumnData[];
+  columns: any[];
+  data?: any[];
   loading: boolean;
   rowKey: string;
   bordered: TableBorder | boolean;
@@ -83,6 +86,17 @@ const { loading, refresh, updateFilter, changePage, tableData, changeSize, pagin
     sizeKey: props.pageSizeKey,
   },
 );
+
+watch(tableData, (val) => {
+  try {
+    if(props.data) {
+      emit('update:data', val);
+    }
+  }catch (e) {
+
+  }
+});
+
 
 const changePageIndex = (page:number) => {
   if(props.loadMode === 'one-load') {

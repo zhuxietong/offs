@@ -2,6 +2,7 @@ import type { UIWindow } from './utils/window'
 import { FetchIntercept } from '@offs/core/src/utils/fetch'
 import type { Ref, Component, VNode } from 'vue'
 import offsStyle from './style'
+import { MeForm } from './components/fm/type'
 
 declare global {
   const _Window: UIWindow
@@ -9,6 +10,10 @@ declare global {
     upx: number,
     isCustomNav?: boolean = false,
   ) => { origin: number; body: number; tabHeight: number }
+
+  export interface FormInstance<T extends object> {
+    valid:(option?:{tip?:MeForm.ErrorTip})=>T
+  }
 
   const _offsStyle: typeof offsStyle
 

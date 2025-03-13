@@ -1,6 +1,6 @@
 {
   "name": "@offs/uni",
-  "version": "0.0.29",
+  "version": "0.0.32",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
@@ -21,10 +21,10 @@
     "@dcloudio/uni-app": "3.0.0-4020920240930001",
     "@offs/core": "*",
     "dayjs": "^1.*.*",
+    "vue": "^3.5.13",
     "z-paging": "^2.8.4"
   },
   "peerDependencies": {
-    "vue": "^3.*.*",
     "vue-router": "*"
   },
   "devDependencies": {
@@ -33,9 +33,9 @@
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
     "eslint-plugin-vue": "^9.31.0",
+    "ts-morph": "^25.0.0",
     "typescript": "^5.0.2",
     "vite": "*",
-    "vue": "^3.*.*",
     "vue-router": "*",
     "vue-tsc": "*"
   },

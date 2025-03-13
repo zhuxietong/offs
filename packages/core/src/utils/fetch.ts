@@ -50,6 +50,7 @@ async function fetchWithTimeout(
 
   try {
 
+    console.log("-----fetchWithTimeout", url, option)
     const response = await fetch(url, {
       ...option,
       signal
@@ -118,7 +119,7 @@ export function Fetch<T>(url: string, option?: OffsCoreFetchOption): Promise<T> 
   const ops = option || {}
   const FetchIntercept = OffsRequestConfig.intercept
 
-  console.log('Fetch------', OffsRequestConfig.tag)
+  console.log('Fetch--', url, option)
 
   const {url: _url, setting} = parserFetchOption(url, ops)
   // const headers = setting.init?.headers || {}

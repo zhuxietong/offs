@@ -82,21 +82,23 @@ const props = withDefaults(
     enableBackTouchClose: true,
     mode: 'sheet',
     tag: 'modal',
-    sheetStyle: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      position: 'fixed',
-      maxHeight: '100vh',
-      left: 0,
-      bottom: 0,
-      right: 0,
-      zIndex: 1000,
-      boxSizing: 'border-box',
+    sheetStyle: ()=>{
+      return {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        position: 'fixed',
+        maxHeight: '100vh',
+        left: 0,
+        bottom: 0,
+        right: 0,
+        zIndex: 1000,
+        boxSizing: 'border-box',
+      }
     },
     alertStyle:
       'align-items: center;position: fixed;left: 0;bottom: 0;right: 0;top:0;display: flex;flex-direction: column;justify-content:center;z-index:1000;box-sizing: border-box;',
-  } as any,
+  },
 )
 
 const isShow = ref(false)

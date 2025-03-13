@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev:custom": "uni -p",
-    "dev:h5": "uni",
+    "dev:h5": "rm -rf node_modules/.vite && uni",
     "dev:h5:ssr": "uni --ssr",
     "dev:mp-alipay": "uni -p mp-alipay",
     "dev:mp-baidu": "uni -p mp-baidu",
@@ -79,7 +79,7 @@
     "eslint-plugin-vue": "^9.31.0",
     "inquirer": "^12.1.0",
     "prettier": "^3.3.3",
-    "sass": "^1.81.0",
+    "sass": "^1.83.4",
     "typescript": "~5.6.3",
     "vite": "^5.2.0",
     "vite-plugin-dts": "^4.1.0",

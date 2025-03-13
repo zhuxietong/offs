@@ -4,10 +4,7 @@
     "es2021": true,
     "node": true
   },
-  "extends": [
-    "plugin:vue/vue3-recommended",
-    "prettier"
-  ],
+  "extends": ["plugin:vue/vue3-recommended", "plugin:@typescript-eslint/recommended", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -16,13 +13,12 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "vue",
-    "@typescript-eslint"
-  ],
+  "plugins": ["vue", "@typescript-eslint"],
   "rules": {
-    "vue/no-inline-styles": "off", // 如果是 Vue 项目
-    "vue/script-setup-uses-vars": "error", // 避免 script setup 中的变量被错误标记为未使用
+    "no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "vue/no-inline-styles": "off",
+    "vue/script-setup-uses-vars": "error",
     "@typescript-eslint/no-namespace": [
       "error",
       {
@@ -36,7 +32,6 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-this-alias": "off",
     "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-empty-function": "off",
     "no-empty": "off",
     "@no-unused-vars": "off",
@@ -47,36 +42,15 @@
         "allowAny": true
       }
     ],
-    "indent": [
-      "error",
-      2
-    ],
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
-    "quotes": [
-      "off",
-      "single"
-    ],
-    "semi": [
-      "off",
-      "always"
-    ],
-    "no-unused-vars": [
-      "warn"
-    ],
+    "indent": ["error", 2],
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["off", "single"],
+    "semi": ["off", "always"],
     "no-console": "off",
     "no-debugger": "warn",
     "comma-dangle": "off",
-    "space-before-function-paren": [
-      "off",
-      "never"
-    ],
-    "object-curly-spacing": [
-      "off",
-      "always"
-    ],
+    "space-before-function-paren": ["off", "never"],
+    "object-curly-spacing": ["off", "always"],
     "arrow-spacing": [
       "error",
       {

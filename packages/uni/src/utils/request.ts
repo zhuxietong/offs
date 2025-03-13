@@ -23,7 +23,6 @@ function fetch(url: string, option: OffsUniFetchOption): Promise<any> {
       header: option.headers,
       data: option.data,
       success: (res) => {
-        console.log('--ss--sdsdd', res)
         resolve({
           ok: res?.statusCode === 200,
           status: res.statusCode,

@@ -12,30 +12,26 @@
     <!-- 需要固定在顶部不滚动的view放在slot="top"的view中，如果需要跟着滚动，则不要设置slot="top" -->
     <!-- 注意！此处的z-tabs为独立的组件，可替换为第三方的tabs，若需要使用z-tabs，请在插件市场搜索z-tabs并引入，否则会报插件找不到的错误 -->
     <template #top>
-        <view
-          id="navbar"
-          v-show="showNav"
-          style="z-index: 101;"
-        >
-          <slot name="nav-bar">
-            <me-navbar
-              :fixed="false"
-              :background="nav?.background"
-              :color="nav?.color"
-              :font-size="nav?.fontSize"
-              :title="title"
-            >
-              <template #left>
-                <slot name="nav-left">
-                  <view>
-                    <me-icon name="back_border"></me-icon>
-                  </view>
-                </slot>
-              </template>
-            </me-navbar>
-          </slot>
-        </view>
-        <slot name="top" />
+      <view id="navbar" v-show="showNav" style="z-index: 101">
+        <slot name="nav-bar">
+          <me-navbar
+            :fixed="false"
+            :background="nav?.background"
+            :color="nav?.color"
+            :font-size="nav?.fontSize"
+            :title="title"
+          >
+            <template #left>
+              <slot name="nav-left">
+                <view>
+                  <me-icon name="back_border"></me-icon>
+                </view>
+              </slot>
+            </template>
+          </me-navbar>
+        </slot>
+      </view>
+      <slot name="top" />
     </template>
     <!-- 自定义下拉刷新view(如果use-custom-refresher为true且不设置下面的slot="refresher"，此时不用获取refresherStatus，会自动使用z-paging自带的下拉刷新view) -->
 
@@ -99,74 +95,78 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useAttrs,watch,computed } from 'vue';
-import { UI } from '#/props'
+import { ref, useAttrs, watch, computed } from 'vue'
+import { UI } from '../../props'
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue'])
 
-
-const props = withDefaults(defineProps<{
-  get: (param: { [k: string]: any }) => Promise<any[]>
-  modelValue: any[],
-  nav?: Partial<UI.NavProps>
-  title?: string
-  showNav?: boolean
-  initStatus?: 'loading' | 'error' | 'success'
-  inTabContainer?: boolean
-  backgroundColor?:string
-  refreshIndicatorColor?:string
-}>(),{
-  nav: undefined,
-  title: '',
-  showNav: true,
-  initStatus: 'loading',
-  refreshIndicatorColor:'#cccccc'
-})
-
+const props = withDefaults(
+  defineProps<{
+    get: (param: { [k: string]: any }) => Promise<any[]>
+    modelValue: any[]
+    nav?: Partial<UI.NavProps>
+    title?: string
+    showNav?: boolean
+    initStatus?: 'loading' | 'error' | 'success'
+    inTabContainer?: boolean
+    backgroundColor?: string
+    refreshIndicatorColor?: string
+  }>(),
+  {
+    nav: undefined,
+    title: '',
+    showNav: true,
+    initStatus: 'loading',
+    refreshIndicatorColor: '#cccccc',
+  },
+)
 
 const outData = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value),
-});
-const dataList = ref<any[]>([]);
+})
+const dataList = ref<any[]>([])
 
-watch(dataList, (value) => {
-  outData.value = value;
-  console.log('---outData', value);
-}, { deep: true });
+watch(
+  dataList,
+  (value) => {
+    outData.value = value
+    console.log('---outData', value)
+  },
+  { deep: true },
+)
 
-
-const $attrs = useAttrs();
+const $attrs = useAttrs()
 
 const doQuery = async (page, size) => {
   props
     .get({ page, size })
     .then((list: any) => {
-      paging.value?.complete(list);
+      paging.value?.complete(list)
     })
     .catch(() => {
-      paging.value?.complete(false);
-    });
-};
+      paging.value?.complete(false)
+    })
+}
 
 defineOptions({
   inheritAttrs: false,
-});
+})
 
-const paging = ref<any>(null);
+const paging = ref<any>(null)
 
 const reload = () => {
-  paging.value?.reload(false);
-};
+  paging.value?.reload(false)
+}
 
 // v-model绑定的这个变量不要在分页请求结束中自己赋值！！！
 
 defineExpose({
   reload,
   complete: (data: any) => {
-    paging.value?.complete(data);
+    paging.value?.complete(data)
   },
-});
+})
 </script>
 
 <style>
@@ -175,10 +175,8 @@ defineExpose({
   top: 0;
   left: 0;
   right: 0;
-  //bottom: 0;
   max-height: 100vh;
   background-color: transparent;
-  //background-color: var(--offs-color-light2);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -191,5 +189,4 @@ defineExpose({
   z-index: -1;
   width: 100%;
 }
-
 </style>

@@ -4,17 +4,30 @@ import * as path from 'path';
 // 定义组件目录路径
 const COMPONENTS_DIR = path.resolve(__dirname, './src/components');
 
-// 根据路径生成 PascalCase 名称，并处理重复路径名的情况
+// 将字符串转换为 PascalCase，处理连字符
+function toPascalCase(str: string): string {
+  return str
+    .split('-') // 先按连字符分割
+    .map(part =>
+      part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+    )
+    .join('');
+}
+
+// 根据路径生成 PascalCase 名称
 function toComponentName(filePath: string): string {
+  // 移除 .vue 扩展名并分割路径
   const parts = filePath.replace('.vue', '').split('/');
-  const fileName = parts.pop(); // 获取文件名
-  const parentDir = parts.pop(); // 获取上级目录名
+  const fileName = parts.pop() || ''; // 获取文件名
 
-  // 如果父目录名和文件名相同，则只使用文件名
-  const baseName = parentDir === fileName ? fileName : `${parentDir || ''}-${fileName}`;
+  // 如果是 index 文件，使用父目录名称
+  if (fileName === 'index') {
+    // 将每个路径部分转换为 PascalCase
+    return 'Me' + parts.map(part => toPascalCase(part)).join('');
+  }
 
-  // 转换为 PascalCase 并添加 "Me" 前缀
-  return 'Me' + baseName.replace(/(^|[-_])(\w)/g, (_, __, char) => char.toUpperCase());
+  // 非 index 文件，包含所有目录名称和文件名
+  return 'Me' + parts.concat(fileName).map(part => toPascalCase(part)).join('');
 }
 
 // 扫描组件目录
@@ -49,8 +62,7 @@ function generateComponentsDTS(components: { name: string; path: string }[]) {
   ];
 
   components.forEach(({ name, path }) => {
-    const importPath = path.replace(/\.vue$/, '');
-    lines.push(`    ${name}: typeof import('${importPath}.vue')['default']`);
+    lines.push(`    ${name}: typeof import('${path}')['default']`);
   });
 
   lines.push('  }');

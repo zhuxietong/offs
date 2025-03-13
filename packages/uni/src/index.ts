@@ -7,7 +7,8 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="/vue-extensions.d.ts" />
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="/props.d.ts" />
+/// <reference path="./props.d.ts" />
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 
 import installCmp from './install'
 import { Dayjs } from '@offs/core'
@@ -16,6 +17,7 @@ export type * from './components.d.ts'
 export type * from './global.d.ts'
 export type * from './vue-extensions.d.ts'
 export type * from './props.ts'
+export type * from './components/fm/type.d.ts'
 
 export { Fetch } from './utils/request'
 export { useFetch } from './hook/useFetch'
@@ -25,6 +27,8 @@ export { OffsNode } from './utils/node'
 export { useParam } from './hook/useParam'
 export { UNI_HUD } from './utils/loading'
 export { useStorage } from './hook/useStorage'
+export { uniKy } from './utils/ky'
+
 
 // @ts-ignore
 import { App, Plugin } from 'vue'
@@ -55,4 +59,5 @@ export const offsModule: Plugin<any> = {
     }
   },
 }
+
 export default offsModule

@@ -7,7 +7,7 @@
   </view>
 </template>
 <script lang="ts" setup>
-import { computed, CSSProperties, provide } from 'vue'
+import { computed, CSSProperties, provide,withDefaults,defineProps } from 'vue'
 
 interface RowStyle {
   padding?: string
@@ -19,8 +19,7 @@ interface ContentStyle {
   float?: 'left' | 'right'
 }
 
-const props = withDefaults(
-  defineProps<{
+interface SectionGroupProps {
     labelStyle?: Partial<CSSProperties>
     showShadow?: boolean
     radius?: 'none' | 'default' | number
@@ -28,15 +27,18 @@ const props = withDefaults(
     contentStyle?: ContentStyle
     groupStyle?: Partial<CSSProperties>
     inset?: string
-  }>(),
+  }
+const props = withDefaults(
+  defineProps<SectionGroupProps>(),
   {
-    labelStyle: {
+    labelStyle: ()=><Partial<CSSProperties>>{
       color: '#262626',
       width: uni.upx2px(180) + 'px',
     },
     radius: 'default',
-    groupStyle: {},
-  } as any,
+    groupStyle: ()=><Partial<CSSProperties>>{},
+    rowStyle: ()=><RowStyle>{},
+  },
 )
 
 const radius = computed(() => {
