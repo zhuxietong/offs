@@ -47,12 +47,10 @@ const visible = ref(props.initLoading || false)
 const Themes = {
   white: {
     color: '#888888',
-    backgroundColor: '#ffffff',
     fontSize: '28upx',
   },
   gray: {
     color: '#999',
-    backgroundColor: '#f8f8f8',
     fontSize: '28upx',
   },
   dark: {

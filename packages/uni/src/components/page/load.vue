@@ -69,6 +69,34 @@
         </view>
       </slot>
     </template>
+    <template v-slot:loadingMoreDefault>
+      <slot name="loadingMoreDefault">
+        <view
+          style="
+            width: 100%;
+            padding: 16rpx;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <view
+            style="
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: center;
+              color: #8f8f94;
+              font-size: 28rpx;
+              text-align: center;
+            "
+          >
+            点击加载更多
+          </view>
+        </view>
+      </slot>
+    </template>
     <template v-slot:loadingMoreLoading>
       <view
         style="
@@ -131,7 +159,7 @@ watch(
   dataList,
   (value) => {
     outData.value = value
-    console.log('---outData', value)
+    console.log('ss---outData', value)
   },
   { deep: true },
 )

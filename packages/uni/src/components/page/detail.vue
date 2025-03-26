@@ -26,14 +26,14 @@
       <slot name="background">
       </slot>
     </view>
-    <view class="me-page-detail-content" :style="{ paddingTop: `${showNav ? navHeight : 0}px` }">
+    <scroll-view scroll-y class="me-page-detail-content" :style="{ top: `${showNav ? navHeight : 0}px` }">
       <slot></slot>
       <view v-if="inTabContainer" style="height: 49px"></view>
       <me-cmp-safe-bottom v-if="inTabContainer" />
-    </view>
+    </scroll-view>
     <template v-if="status === 'loading'">
       <slot name="loading">
-        <view class="me-page-detail-loading">
+        <view class="me-page-detail-loading" :style="{...backStyle}">
           <me-cmp-indicator />
         </view>
       </slot>
@@ -61,7 +61,7 @@ const props = withDefaults(
     showNav?: boolean
     initStatus?: 'loading' | 'error' | 'success'
     inTabContainer?: boolean
-    backgroundColor?:string
+    background?:string
   }>(),
   {
     nav: undefined,
@@ -75,6 +75,10 @@ const onBack = ()=>{
   // @ts-ignore
   _To.back()
 }
+
+const backStyle = props.background ? {background:props.background} : {}
+console.log('----olllls',backStyle
+)
 
 const status = ref(props.initStatus)
 
@@ -128,7 +132,7 @@ page {
   align-items: center;
   justify-content: center;
   gap: 20rpx;
-  background-color: var(--offs-color-fill1);
+  background-color: var(--offs-color-light1);
 }
 
 .me-page-detail-error {
@@ -154,13 +158,21 @@ page {
 }
 
 .me-page-detail-background {
-  position: absolute;
-  z-index: -1;
+  position: fixed;
+  z-index: 1;
   width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 100vh;
 }
 
 .me-page-detail-content {
-  position: absolute;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 2;
   width: 100%;
 }

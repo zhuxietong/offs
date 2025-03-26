@@ -24,11 +24,18 @@ export { useFetch } from './hook/useFetch'
 export { DeepAssign } from './utils/merge'
 export { useNavigation } from './hook/useNavigation'
 export { OffsNode } from './utils/node'
-export { useParam } from './hook/useParam'
+export { useParam, useMountedParam } from './hook/useParam'
 export { UNI_HUD } from './utils/loading'
 export { useStorage } from './hook/useStorage'
 export { uniKy } from './utils/ky'
 
+export type {
+  UniKyOptions,
+  UniKyInstance,
+  UniKyRequest,
+  UniKyResponse,
+  UniKyPromise,
+} from './utils/ky'
 
 // @ts-ignore
 import { App, Plugin } from 'vue'

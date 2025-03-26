@@ -9,6 +9,12 @@ export interface UniKyRequest {
   timeout?: number
 }
 
+// 添加 ActiveHud 接口定义
+export interface ActiveHud {
+  start(info?: { message: string; ext: any } | string)
+  end(success: boolean, message?: string | { message?: string; errMsg?: string; ext: any } | unknown)
+}
+
 export interface UniKyOptions {
   prefixUrl?: string
   timeout?: number
@@ -17,6 +23,7 @@ export interface UniKyOptions {
   method?: string
   data?: any
   searchParams?: Record<string, any> | URLSearchParams | string
+  hud?: ActiveHud  // 添加 hud 属性
   hooks?: {
     beforeRequest?: Array<
       (
@@ -85,6 +92,11 @@ class UniKyBase {
     const mergedOptions = this.mergeOptions(options)
     const fullUrl = this.getFullUrl(url, mergedOptions)
 
+    // 如果有 hud，则调用 start 方法
+    if (mergedOptions.hud) {
+      mergedOptions.hud.start()
+    }
+
     // 创建请求对象
     let request: UniKyRequest = {
       url: fullUrl,
@@ -134,6 +146,10 @@ class UniKyBase {
           break
         } catch (error) {
           if (retries <= 0) {
+            // 如果有 hud 且请求失败，调用 end 方法并传入 false
+            if (mergedOptions.hud) {
+              mergedOptions.hud.end(false, error)
+            }
             throw error
           }
           retries--
@@ -151,11 +167,27 @@ class UniKyBase {
           }
           // 如果拦截器没有返回值(void)，则继续使用当前的响应对象
         }
+
+        // 如果有 hud 且请求成功，调用 end 方法并传入 true
+        if (mergedOptions.hud) {
+          mergedOptions.hud.end(true)
+        }
+
         return processedResponse.data
+      }
+
+      // 如果有 hud 且请求成功，调用 end 方法并传入 true
+      if (mergedOptions.hud) {
+        mergedOptions.hud.end(true)
       }
 
       return response.data
     } catch (error) {
+      // 如果有 hud 且请求失败，调用 end 方法并传入 false
+      if (mergedOptions.hud) {
+        mergedOptions.hud.end(false, error)
+      }
+
       throw error
     }
   }
@@ -241,45 +273,57 @@ class UniKyBase {
 
   protected addSearchParams(
     url: string,
-    searchParams?: Record<string, string> | URLSearchParams | string,
+    searchParams?: Record<string, any> | URLSearchParams | string,
   ): string {
     if (!searchParams) {
       return url
     }
 
-    const urlObject = new URL(url, 'http://example.com') // 使用基础URL以处理相对路径
+    // 准备查询字符串
+    let queryString = '';
 
     if (typeof searchParams === 'string') {
-      // 如果是字符串，直接附加
-      urlObject.search = searchParams.startsWith('?') ? searchParams : `?${searchParams}`
-    } else if (searchParams instanceof URLSearchParams) {
-      // 如果是 URLSearchParams 实例
-      searchParams.forEach((value, key) => {
-        urlObject.searchParams.append(key, value)
-      })
-    } else {
-      // 如果是对象
+      // 如果是字符串，直接使用
+      queryString = searchParams.startsWith('?') ? searchParams.substring(1) : searchParams;
+    } else if (typeof URLSearchParams !== 'undefined' && searchParams instanceof URLSearchParams) {
+      // 如果是 URLSearchParams 实例，转为字符串
+      queryString = searchParams.toString();
+    } else if (searchParams && typeof searchParams === 'object') {
+      // 如果是对象，手动构建查询字符串
+      const params = [];
       for (const [key, value] of Object.entries(searchParams)) {
-        urlObject.searchParams.append(key, value)
+        if (value !== undefined && value !== null) {
+          // @ts-ignore
+          params.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`);
+        }
       }
+      queryString = params.join('&');
     }
 
-    // 返回完整的URL，但移除基础URL部分
-    return urlObject.pathname + urlObject.search + urlObject.hash
+    // 添加到 URL
+    const hasQueryString = url.includes('?');
+    if (queryString) {
+      return url + (hasQueryString ? '&' : '?') + queryString;
+    }
+
+    return url;
   }
 
   protected getFullUrl(url: string, options: UniKyOptions): string {
-    const prefixUrl = options.prefixUrl ? options.prefixUrl.replace(/\/$/, '') : ''
+    const prefixUrl = options.prefixUrl ? options.prefixUrl.replace(/\/$/, '') : '';
 
-    // 处理 searchParams
-    url = this.addSearchParams(url, options.searchParams)
-
+    // 首先判断是否是完整URL
     if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url
+      // 对完整URL添加查询参数
+      return this.addSearchParams(url, options.searchParams);
     }
 
-    const normalizedUrl = url.startsWith('/') ? url : `/${url}`
-    return `${prefixUrl}${normalizedUrl}`
+    // 处理相对路径
+    const normalizedUrl = url.startsWith('/') ? url : `/${url}`;
+    const fullUrl = `${prefixUrl}${normalizedUrl}`;
+
+    // 添加查询参数
+    return this.addSearchParams(fullUrl, options.searchParams);
   }
 
   // 创建具有 json 方法的 Promise
